@@ -10,3 +10,6 @@ sqlite_utils
 markdownify
 jupytext
 markdown
+
+nbzip
+jupyter_contrib_nbextensions
