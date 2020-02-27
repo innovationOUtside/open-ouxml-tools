@@ -1,10 +1,10 @@
-<xsl:stylesheet version="1.0" 
-    xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-    xmlns:exsl="http://exslt.org/common" 
+<xsl:stylesheet version="1.0"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:exsl="http://exslt.org/common"
     xmlns:str="http://exslt.org/strings" extension-element-prefixes="exsl">
 
     <!-- OU-XML tag descriptions at: https://learn3.open.ac.uk/mod/oucontent/view.php?id=124345 -->
-    
+
     <!-- xmlns:functx="http://www.functx.com" -->
 
     <!-- Strip out any whitespace used to style layout of XML doc we're processing -->
@@ -17,16 +17,16 @@
 
     <!-- for escaping underscore so as not to clobber markdown,
          need something like:
-        <xsl:value-of select="str:replace(string, search, replace)" /> 
+        <xsl:value-of select="str:replace(string, search, replace)" />
         such as:
         <xsl:value-of select="str:replace(text(), '_', '\_')" />
         Or we could be really hacky and replace everything in the original XML prior to XSLT?
     -->
-    
+
     <xsl:template match="/">
         <xsl:apply-templates/>
     </xsl:template>
-    
+
     <!-- some common HTMLy things... -->
 
     <xsl:template match="a">
@@ -61,7 +61,7 @@
     <!-- some OU-XML alternatives to HTMLy things... -->
 
     <!-- If the parent is a ListItem, we need to indent by at least one space.
-            This then allows us to have multi-paragraph lists. 
+            This then allows us to have multi-paragraph lists.
         -->
     <xsl:template match="Paragraph">
         <xsl:text>&#xa;</xsl:text>
@@ -156,15 +156,15 @@
         <xsl:text>&#xa;&#xa;## Learning Outcomes&#xa;&#xa;</xsl:text>
         <xsl:apply-templates />
     </xsl:template>
-    
+
     <xsl:template match="LearningOutcome">
         <!-- should we get rid of div? Does it break inner md in md doc? -->
         <div class='learningOutcome'>
             <xsl:apply-templates />
         </div>
     </xsl:template>
-    
-    
+
+
     <!-- The md output actually starts here with document partitioning -->
     <xsl:template match="Session">
         <!-- Create a new output document for each session -->
@@ -178,10 +178,10 @@
         </exsl:document>
     </xsl:template>
 
-    <xsl:template match="Section">   
+    <xsl:template match="Section">
         <xsl:apply-templates />
     </xsl:template>
-    
+
     <xsl:template match="Session/Title">
         <xsl:text># </xsl:text>
         <xsl:value-of select="." />
@@ -277,9 +277,9 @@
            <xsl:apply-templates />
         <xsl:text>&#xa;&#xa;----&#xa;&#xa;</xsl:text>
     </xsl:template>
-    
-    
-    <!-- Backmatter is at session level and should create a new doc 
+
+
+    <!-- Backmatter is at session level and should create a new doc
          It must contain at least one of:
              <Acknowledgements>, <Appendices>, <Conclusion>, <CourseTeam>,
              <FurtherReading>, <Glossary>, <Index>, <Promotion>, <References>
@@ -290,19 +290,19 @@
             <xsl:apply-templates />
         </exsl:document>
     </xsl:template>
-    
+
     <!-- Should this have its own document? Or share one with References? -->
     <xsl:template match="FurtherReading">
         <xsl:text>&#xa;&#xa;## Further Reading&#xa;</xsl:text>
         <xsl:apply-templates />
     </xsl:template>
-     
+
     <!-- Should this have its own document? Or share one with FurtherReading? -->
     <xsl:template match="References">
         <xsl:text>&#xa;&#xa;## References&#xa;&#xa;</xsl:text>
         <xsl:apply-templates />
     </xsl:template>
-    
+
     <!-- ReferenceID and ReferenceStyle are further available attributes... -->
     <xsl:template match="Reference">
         <xsl:text>* </xsl:text><xsl:apply-templates select="node()|text()" />
@@ -312,14 +312,14 @@
         <xsl:text>&#xa;</xsl:text>
     </xsl:template>
 
-    
+
     <!-- it would be nice to do more with Glossary items? -->
     <xsl:template match="GlossaryTerm">
         <xsl:text>__</xsl:text>
         <xsl:value-of select="." />
         <xsl:text>__</xsl:text>
     </xsl:template>
-    
+
     <!-- Should we put the glossary in it's own document? Will this trump creating Backmatter doc? -->
     <xsl:template match="Glossary">
        <exsl:document method="html" href="{$filestub}_{format-number(count(../preceding-sibling::Unit),'00')}_glossary.md">
@@ -327,18 +327,18 @@
         <xsl:apply-templates />
       </exsl:document>
     </xsl:template>
-    
+
     <!-- GlossaryItem elements go in the Backmatter/Glossary and
          have Term and Definition components
     -->
     <xsl:template match="GlossaryItem">
        <xsl:apply-templates />
     </xsl:template>
-    
+
      <xsl:template match="Term">
        <xsl:text>__</xsl:text><xsl:apply-templates /><xsl:text>__: </xsl:text>
     </xsl:template>
-        
+
     <xsl:template match="Definition">
        <xsl:apply-templates />
         <xsl:text>&#xa;</xsl:text>
@@ -378,7 +378,7 @@
     </xsl:template>
 
     <xsl:template match="ProgramListing">
-        <xsl:text>&#xa;&#xa;```python&#xa;</xsl:text>
+        <xsl:text>&#xa;&#xa;```bash&#xa;</xsl:text>
         <xsl:apply-templates />
         <xsl:text>&#xa;```&#xa;&#xa;</xsl:text>
     </xsl:template>
@@ -391,7 +391,7 @@
     </xsl:template>
 
     <xsl:template match="ComputerDisplay">
-        <xsl:text>&#xa;&#xa;```python&#xa;</xsl:text>
+        <xsl:text>&#xa;&#xa;```bash&#xa;</xsl:text>
         <xsl:apply-templates />
         <xsl:text>&#xa;```&#xa;&#xa;</xsl:text>
     </xsl:template>
@@ -400,12 +400,12 @@
         <xsl:text>&#xa;</xsl:text>
         <xsl:apply-templates />
     </xsl:template>
-    
+
     <xsl:template match="ComputerDisplay/Paragraph/br">
         <xsl:text>&#xa;</xsl:text>
         <xsl:apply-templates />
     </xsl:template>
-    
+
     <xsl:template match="ComputerDisplay/Paragraph/ComputerCode">
         <xsl:text>&#xa;</xsl:text>
         <xsl:apply-templates />
@@ -509,7 +509,7 @@
     <xsl:template match="Equation/MathML/math">
         <xsl:text> $$</xsl:text><xsl:value-of select="." /><xsl:text> $$ </xsl:text>
     </xsl:template>
-    
+
     <xsl:template match="Figure">
         <xsl:apply-templates />
     </xsl:template>
@@ -549,7 +549,7 @@
         <xsl:apply-templates />
          <xsl:comment>ENDSAQ</xsl:comment>
     </xsl:template>
-    
+
     <xsl:template match="SAQ/Heading">
         <xsl:text>&#xa;&#xa;### </xsl:text>
         <xsl:value-of select="." />
@@ -605,7 +605,7 @@
 
     <!-- This is here as a warning / catch all for any missed heading types -->
     <xsl:template match="Heading">
-        <xsl:comment>Heading: 
+        <xsl:comment>Heading:
             <xsl:value-of select="." />
         </xsl:comment>
     </xsl:template>
@@ -626,11 +626,11 @@
         <xsl:value-of select="." />
         <xsl:text>$$</xsl:text>
     </xsl:template>
-    
+
     <xsl:template match="sub">
         <sub><xsl:apply-templates /></sub>
     </xsl:template>
-    
+
     <xsl:template match="sup">
         <sup><xsl:apply-templates /></sup>
     </xsl:template>
@@ -638,12 +638,12 @@
     <xsl:template match="SideNote">
         <xsl:apply-templates />
     </xsl:template>
-    
+
     <xsl:template match="SideNoteParagraph">
         <!-- TO DO: add a link reference to a popup or footer? -->
     </xsl:template>
- 
-    
+
+
     <!-- clear up extraneous whitespace -->
     <!-- This going too far? There whitespace we need around tags... -->
     <!--
