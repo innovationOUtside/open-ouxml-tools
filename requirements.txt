@@ -1,0 +1,12 @@
+Click
+requests
+xmltodict
+tqdm
+pandas
+lxml
+mechanicalsoup
+beautifulsoup4
+sqlite_utils
+markdownify
+jupytext
+markdown

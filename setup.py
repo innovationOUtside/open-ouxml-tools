@@ -15,7 +15,11 @@ setup(
         'pandas',
         'lxml',
         'mechanicalsoup',
-        'beautifulsoup4'
+        'beautifulsoup4',
+        'sqlite_utils',
+        'markdownify',
+        'jupytext',
+        'markdown'
     ],
     entry_points='''
         [console_scripts]

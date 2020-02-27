@@ -51,6 +51,7 @@ def get_db_units(dbname, term):
     df = pd.read_sql(
         f'SELECT * FROM htmlxml WHERE LOWER(itemTitle) LIKE "%{term.lower()}%"', DB.conn
     )
+    print()
     df.apply(lambda x: print(x["courseCode"], x["itemTitle"]), axis=1)
 
 
