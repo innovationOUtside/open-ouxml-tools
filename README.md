@@ -9,20 +9,20 @@ Run in MyBinder, open this `README.md` from the notebook homepage and it will op
 
 Run the code cells (or from the notebook cell menu, select `Run All`).
 
-```bash
+```
 # List units bby search keywords
-ouxml_units --term "history scottish"
+! ouxml_units --term "history scottish"
 ```
 
-```bash
+```
 # Grab XML for an OpenLEarn unit
 # For some reason, this may take ages:-(
-ouxml_grab https://www.open.edu/openlearn/science-maths-technology/chemistry/the-molecular-world/content-section-1.1
+! ouxml_grab https://www.open.edu/openlearn/science-maths-technology/chemistry/the-molecular-world/content-section-1.1
 ```
 
-```bash
+```
 # Generate markdown from OU-XML
-ouxml2md --dbname openlearn_oer.db --outdir demo
+! ouxml2md --dbname openlearn_oer.db --outdir demo
 ```
 
 Markdown files and images for the unit will appear in the `demo` directory.
