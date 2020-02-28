@@ -571,6 +571,7 @@ def scrape_unit_openlearn_base(
     imagetable="imagetest",
     course_presentation="unknown",
     dbname=None,
+    newdb=False
 ):
     # OpenLearn is easier because we can derive the image URL from the XML
     # OpenLearn has different pattern on creating the XML URL but html_xml_save should work - scxml is good?
@@ -580,7 +581,7 @@ def scrape_unit_openlearn_base(
     # Save the figures
 
     if dbname:
-        setup_DB(dbname)
+        setup_DB(dbname, newdb=newdb)
     elif not DB:
         # Or should we just set up an in memory db?
         setup_DB("dummydb.db")
@@ -628,11 +629,11 @@ def _preflight(s=None, course_presentation=None, dbname=None, newdb=True):
 
         s = getAuthedSession()
 
-    if not dbname and (newdb or not DB):
+    if not dbname and newdb:
         dbname = "auto_{}".format(course_presentation.replace("-", "_"))
         print("Setting up new db: {}".format(dbname))
         setup_DB("{}.db".format(dbname))
-    elif not DB:
+    elif dbname:
         setup_DB(dbname)
 
     return s
@@ -645,12 +646,13 @@ def scrape_course_base(
     imagetable="imagetest",
     course_presentation="unknown",
     dbname=None,
+    newdb=False
 ):
     """ Scrape a course... Or try to..."""
 
     if dbname:
-        setup_DB(dbname)
-    elif not DB:
+        setup_DB(dbname, newdb=newdb)
+    elif not dbname:
         # Or should we just set up an in memory db?
         setup_DB("dummydb.db")
 
