@@ -11,7 +11,6 @@ setup(
         'Click',
         'requests',
         'xmltodict',
-        'tqdm',
         'pandas',
         'lxml',
         'mechanicalsoup',

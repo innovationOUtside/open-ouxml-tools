@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.3.0rc1
+#       jupytext_version: 1.3.1
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -27,8 +27,6 @@ import unicodedata
 import base64
 import os
 
-
-from tqdm import tqdm, tqdm_notebook
 
 import pandas as pd
 
@@ -231,7 +229,7 @@ def _xml_figures(xml_content, coursecode="", pageurl=""):
     # ??Note that acknowledgements to figures are provided at the end of the XML file with only informal free text/figure number identifers available for associating a particular acknowledgement/copyright assignment with a given image. It would be so much neater if this could be bundled up with the figure itself, or if the figure and the acknowledgement could share the same unique identifier?
     figdict = {}
 
-    for figure in tqdm_notebook(figures):
+    for figure in figures:
         figdict = {
             "xpageurl": pageurl,
             "caption": "",
@@ -587,7 +585,7 @@ def scrape_unit_openlearn_base(
         # Or should we just set up an in memory db?
         setup_DB("dummydb.db")
 
-    for possible_sc_link in tqdm_notebook(possible_sc_links):
+    for possible_sc_link in possible_sc_links:
         typ, html_page_url, rawxml, html_src = html_xml_save_openlearn(
             s, possible_sc_link, course_presentation=course_presentation
         )
@@ -656,7 +654,7 @@ def scrape_course_base(
         # Or should we just set up an in memory db?
         setup_DB("dummydb.db")
 
-    for possible_sc_link in tqdm_notebook(possible_sc_links):
+    for possible_sc_link in possible_sc_links:
 
         typ, html_page_url, rawxml, html_src = html_xml_save(
             s, possible_sc_link, course_presentation=course_presentation
