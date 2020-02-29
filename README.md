@@ -10,7 +10,7 @@ This package provides a range of command line and API tools for:
 
 The markdown files can then be edited as simple text documents and used as part of markdown web publishing workflows.
 
-The Binderised version of this repo allows you to test the package an try generating markdown versions of OpenLearn units from their source OU-XML. The Binderised repo also installs Jupytext, which allows the markdown files to be edited in a Jupyter notebook interface. (Files cannot be saved directly back to Github from a MyBinder environment; they need to be exported and then uploaded to a Github repo, or example. The `nbarchive` extension is also installed in the Binderised environment to make it easier to export generated markdown files, etc.)
+The Binderised version of this repo allows you to test the package and generate markdown versions of OpenLearn units from their source OU-XML. The Binderised repo also installs Jupytext, which allows the markdown files to be edited in a Jupyter notebook interface. (Files cannot be saved directly back to Github from a MyBinder environment; they need to be exported and then uploaded to a Github repo, or example. The `nbarchive` extension is also installed in the Binderised environment to make it easier to export generated markdown files, etc.)
 
 Quick example:
 
