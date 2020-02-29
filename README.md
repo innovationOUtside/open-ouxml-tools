@@ -30,7 +30,7 @@ Having listed units of interest to you, you can grab scrape the OU-XML and image
 # For some reason, this may take ages:-(
 ! ouxml_grab https://www.open.edu/openlearn/science-maths-technology/chemistry/the-molecular-world/content-section-1.1
 ```
-Once you have downloaded the assets, you can convert the XML to markdown files in a specified outpur directory (it will be automatically created if it does not already exist): 
+Once you have downloaded the assets, you can convert the XML to markdown files in a specified output directory (it will be automatically created if it does not already exist): 
 
 ```bash
 # Generate markdown from OU-XML
