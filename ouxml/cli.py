@@ -19,12 +19,14 @@ def droptable(conn, table):
     default="openlearn_oer.db",
     help="SQLite database name (default: openlearn_oer.db)",
 )
-@click.option('--newdb/--no-newdb', default=True)
+@click.option("--newdb/--no-newdb", default=True)
 @click.argument("url")
 def get_xml(dbname, newdb, url):
     """Get OU-XML for an OpenLearn Unit from OpenLearn HTML URL."""
     # test='https://www.open.edu/openlearn/science-maths-technology/chemistry/the-molecular-world/content-section-1.1'
-    mscpr.scrape_unit_openlearn_base(possible_sc_links=[url], dbname=dbname, newdb=newdb)
+    mscpr.scrape_unit_openlearn_base(
+        possible_sc_links=[url], dbname=dbname, newdb=newdb
+    )
 
 
 @click.command()
