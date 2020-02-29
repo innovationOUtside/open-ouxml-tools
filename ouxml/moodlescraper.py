@@ -30,7 +30,6 @@ import os
 
 import pandas as pd
 
-import sqlite3
 from sqlite_utils import Database
 
 
@@ -47,7 +46,7 @@ DB = None
 # ===
 # via http://stackoverflow.com/questions/5757201/help-or-advice-me-get-started-with-lxml/5899005#5899005
 def flatten(el):
-    """ Utility function for flattening XML tags. """
+    """Utility function for flattening XML tags."""
     if el is None:
         return ""  # Originally returned None; any side effects of move to ''?
     result = [(el.text or "")]
@@ -60,7 +59,7 @@ def flatten(el):
 # We use a session just to simplify things wrt VLE scraper
 # We could just use requests for the OpenLearn calls
 def getSession():
-    """ Create a connection session to OpenLearn. """
+    """Create a connection session to OpenLearn."""
 
     URL = "https://www.open.edu/openlearn/"
 
@@ -70,8 +69,9 @@ def getSession():
 
 
 def _get_page(url, s=None):
-    """ Utility function to play nice when scraping.
-        This will also fetch a page according to a session or a simple get.
+    """
+    Utility function to play nice when scraping.
+    This will also fetch a page according to a session or a simple get.
     """
 
     if not url:
@@ -94,7 +94,7 @@ def _get_page(url, s=None):
 
 
 def setup_DB(dbname="test_vle_course_scraper_db.db", newdb=False):
-    """ Create a new database and database connection. """
+    """Create a new database and database connection."""
 
     # Need to find a better way to do this
     global DB
@@ -116,7 +116,7 @@ def setup_DB(dbname="test_vle_course_scraper_db.db", newdb=False):
 
 
 def get_full_html_page_url(html_page_url):
-    """ The printable page is the full page. """
+    """The printable page is the full page."""
     if "?" in html_page_url:
         plink = "{}&printable=1".format(html_page_url)
     else:
@@ -125,7 +125,7 @@ def get_full_html_page_url(html_page_url):
 
 
 def get_sc_page(html_url, s=None):
-    """ Try to load a structured content page. """
+    """Try to load a structured content page."""
     # html_page = _get_page('https://learn2.open.ac.uk/mod/repeatactivity/view.php?id=1349903&specialpage=1', s)
     html_page = _get_page(html_url, s)
     if not html_page:
@@ -160,7 +160,7 @@ def get_sc_page(html_url, s=None):
 def html_xml_save(
     s=None, possible_sc_link=None, table="htmlxml", course_presentation=None
 ):
-    """ Save the HTML and XML for a VLE page page. """
+    """Save the HTML and XML for a VLE page page."""
 
     if not possible_sc_link:
         # should really raise error here
@@ -209,11 +209,13 @@ def html_xml_save(
 
 
 def _course_code(xml_content):
+    """Get course code from XML."""
     root = etree.fromstring(xml_content)
     return flatten(root.find(".//CourseCode"))
 
 
 def _xml_figures(xml_content, coursecode="", pageurl=""):
+    """Extract figure elements and paths from XML."""
     figdicts = []
 
     try:
@@ -288,6 +290,7 @@ from urllib.parse import urlsplit, urlunsplit
 
 
 def _xml_figures_openlearn(xml_content, coursecode="", pageurl=""):
+    """Identify image elements and paths in OpenLearn XML."""
     figdicts = []
     try:
         root = etree.fromstring(xml_content)
@@ -379,7 +382,7 @@ def _xml_glossary(xml_content, coursecode="", pageurl=""):
         return False
 
     glossdicts = []
-
+    # TO DO
     gloss = root.findall(".//{}".format("??? TO DO "))
     table = "xmlglossary"
     if glossdicts:
@@ -390,13 +393,14 @@ def _xml_glossary(xml_content, coursecode="", pageurl=""):
 
 # requires the session
 def get_as_base64(url, s=None):
+    """Get data as base64 encoded data."""
     data = _get_page(url, s).content
 
     return base64.b64encode(data), data
 
 
 def saveImages(_figures_list, s=None, imagetable="imagetest", imgurlkey="hurl"):
-    """ Save images into database. """
+    """Save images into database."""
 
     if not imagetable:
         imagetable = "imagetest"
@@ -427,6 +431,7 @@ def saveImages(_figures_list, s=None, imagetable="imagetest", imgurlkey="hurl"):
 def _html_figures(
     html_content, s=None, coursecode="", pageurl="", imagetable="imagetest"
 ):
+    """Extract images from HTML page."""
     # display('make html soup')
     soup = BeautifulSoup(html_content, "lxml")
     # result = etree.tostring(html, pretty_print=True, method="html")
@@ -476,7 +481,7 @@ def _html_figures(
 # +
 # Page grabbers for OpenLearn content
 def get_openlearn_sc_page(html_url, s=None, xml_url=None):
-    """ Try to load a structured content page. """
+    """Try to load a structured content page."""
     # html_page = _get_page('https://learn2.open.ac.uk/mod/repeatactivity/view.php?id=1349903&specialpage=1', s)
 
     if "content-section" not in html_url:
@@ -518,7 +523,7 @@ def get_openlearn_sc_page(html_url, s=None, xml_url=None):
 def html_xml_save_openlearn(
     s=None, possible_sc_link=None, table="htmlxml", course_presentation=None
 ):
-    """ Save the HTML and XML from an OpenLearn OU-XML document URL. """
+    """Save HTML and XML from an OpenLearn OU-XML document URL."""
 
     if not possible_sc_link:
         # should really raise error here
@@ -574,9 +579,11 @@ def scrape_unit_openlearn_base(
     dbname=None,
     newdb=False,
 ):
+    """Scrape an OpenLearn unit homepage for OU-XML link."""
     # OpenLearn is easier because we can derive the image URL from the XML
     # OpenLearn has different pattern on creating the XML URL but html_xml_save should work - scxml is good?
     # Test that we can get a content0 page
+    # TO DO - ideally, we should be able to cope with *any* OpenLEarn unit page
     # Get the XML
     # Parse the figures: _xml_figures_openlearn() does this
     # Save the figures
@@ -623,7 +630,7 @@ def scrape_unit_openlearn_base(
 
 
 def _preflight(s=None, course_presentation=None, dbname=None, newdb=True):
-    """ Abstract out set up elements for new scrapes."""
+    """Abstract out set up elements for new scrapes."""
 
     if not s:
         from vlescrapertools import getAuthedSession
@@ -703,7 +710,7 @@ def scrape_provided_links(
 def scrape_course_presentation(
     s=None, course_presentation=None, dbname=None, view_pages_only=False
 ):
-    """ Scrape the VLE for a particular presentation of a particular module. """
+    """Scrape the VLE for a particular presentation of a particular module."""
 
     # Need to do this a better way; hack for now
     # global DB
@@ -731,6 +738,7 @@ def scrape_course_presentation(
 
 # OpenLearn tools
 def getUnitLocations(q="", goforit=False):
+    """Get URLs and unit names for OpenLearn units."""
     # The OPML file lists all OpenLearn units by topic area
     srcUrl = "http://openlearn.open.ac.uk/rss/file.php/stdfeed/1/full_opml.xml"
     r = requests.get("http://openlearn.open.ac.uk/rss/file.php/stdfeed/1/full_opml.xml")
