@@ -313,6 +313,7 @@ def _xml_figures_openlearn(xml_content, coursecode="", pageurl=""):
         img = figure.find("Image")
         # The image url as given does not resolve - we need to add in provided hash info
         figdict["srcurl"] = img.get("src")
+        xsrc = img.get("x_imagesrc")
         if figdict["srcurl"] is None:
             continue
 
@@ -328,13 +329,13 @@ def _xml_figures_openlearn(xml_content, coursecode="", pageurl=""):
                 path="/".join(
                     sp[:-1]
                     + [figdict["x_folderhash"], figdict["x_contenthash"]]
-                    + sp[-1:]
+                    + [xsrc]  # sp[-1:]
                 )
             )
             figdict["imgurl"] = urlunsplit(path)
         else:
             figdict["imgurl"] = ""
-        xsrc = img.get("x_imagesrc")
+
         figdict["caption"] = flatten(figure.find("Caption")).strip()
         figdict["alt"] = flatten(figure.find("Alternative")).strip()
         figdict["alt"] = (
@@ -571,7 +572,7 @@ def scrape_unit_openlearn_base(
     imagetable="imagetest",
     course_presentation="unknown",
     dbname=None,
-    newdb=False
+    newdb=False,
 ):
     # OpenLearn is easier because we can derive the image URL from the XML
     # OpenLearn has different pattern on creating the XML URL but html_xml_save should work - scxml is good?
@@ -646,7 +647,7 @@ def scrape_course_base(
     imagetable="imagetest",
     course_presentation="unknown",
     dbname=None,
-    newdb=False
+    newdb=False,
 ):
     """ Scrape a course... Or try to..."""
 
