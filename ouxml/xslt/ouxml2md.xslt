@@ -72,11 +72,12 @@
         <xsl:text>&#xa;</xsl:text>
     </xsl:template>
 
-    <xsl:template match="Image">
+    <xsl:template match="Image | Figure/Image">
         <xsl:text>&#xa;&#xa;![</xsl:text>
         <!-- <xsl:value-of select="@alt" /> -->
         <xsl:choose>
          <xsl:when test="../Alternative"><xsl:value-of select="../Alternative" /></xsl:when>
+         <xsl:when test="../Description"><xsl:value-of select="../Description" /></xsl:when>
          <xsl:otherwise>figure <xsl:value-of select='str:split(@src, "\\")[last()]' />
              <!--<xsl:value-of select="generate-id()"/> -->
          </xsl:otherwise>
@@ -200,12 +201,10 @@
     <xsl:template match="SubSection">
         <xsl:text>&#xa;&#xa;---&#xa;&#xa;</xsl:text>
         <xsl:apply-templates />
-        <xsl:apply-templates />
     </xsl:template>
 
     <xsl:template match="SubSubSection">
         <xsl:text>&#xa;&#xa;---&#xa;&#xa;</xsl:text>
-        <xsl:apply-templates />
         <xsl:apply-templates />
     </xsl:template>
 
@@ -252,18 +251,13 @@
         <xsl:text>&#xa;&#xa;#### Discussion&#xa;</xsl:text>
         <xsl:apply-templates />
     </xsl:template>
+    
 
     <xsl:template match="Answer">
         <xsl:text>&#xa;&#xa;#### Answer&#xa;</xsl:text>
         <xsl:apply-templates />
     </xsl:template>
 
-    <!-- Caption relates to Figure, along with Image -->
-    <xsl:template match="Figure/Caption">
-        <xsl:text>&#xa;&#xa;</xsl:text>
-        <xsl:apply-templates />
-        <xsl:text>&#xa;&#xa;</xsl:text>
-    </xsl:template>
 
     <xsl:template match="Figure/Caption/Number">
         <xsl:text>__</xsl:text>
@@ -271,7 +265,7 @@
         <xsl:text>__</xsl:text>
     </xsl:template>
 
-
+    
     <xsl:template match="CaseStudy">
         <xsl:text>&#xa;&#xa;----&#xa;&#xa;### Case Study</xsl:text>
            <xsl:apply-templates />
@@ -579,7 +573,7 @@
     </xsl:template>
 
  <xsl:template match="Alternative"></xsl:template>
-
+ <xsl:template match="Description"></xsl:template>
 
     <xsl:template match="SAQ">
          <xsl:comment>SAQ id=<xsl:value-of select="@id" /></xsl:comment>
