@@ -3,7 +3,7 @@
 # coding: utf-8
 
 
-#!pip3 install markdownify
+# !pip3 install markdownify
 from bs4 import BeautifulSoup
 from markdownify import markdownify as md
 
@@ -300,11 +300,11 @@ def openlearn_image_mapper(dbname, _basedir="oumd_demo3", _imgdir="testimages"):
         """Automatically generate an imgdict that maps agains links in a markdown file."""
 
         q = """
-            SELECT DISTINCT srcurl, x.stub as p , b64image
+            SELECT DISTINCT srcurl, x.stub as p, b64image
             FROM xmlfigures x JOIN imagetest i
-            WHERE x.minstub=i.minstub AND x.stub in ({});
+            WHERE x.minstub=i.minstub AND x.minstub in ({});
             """.format(
-            ", ".join(['"{}"'.format(imgkeys[k]) for k in imgkeys])
+            ", ".join(['"{}"'.format(imgkeys[k].split('.')[0]) for k in imgkeys])
         )
         tmp_img = pd.read_sql(q, DB.conn)
         imgdict = tmp_img.set_index("srcurl").to_dict()["p"]

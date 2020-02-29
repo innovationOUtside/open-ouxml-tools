@@ -316,6 +316,10 @@ def _xml_figures_openlearn(xml_content, coursecode="", pageurl="", root=None):
         }
         img = figure.find("Image")
         # The image url as given does not resolve - we need to add in provided hash info
+        
+        if img is None:
+            continue
+
         figdict["srcurl"] = img.get("src")
         xsrc = img.get("x_imagesrc")
         if figdict["srcurl"] is None:
@@ -337,6 +341,8 @@ def _xml_figures_openlearn(xml_content, coursecode="", pageurl="", root=None):
                 )
             )
             figdict["imgurl"] = urlunsplit(path)
+            # Want links to images not eg .eps
+            #figdict["srcurl"] = figdict["imgurl"]
         else:
             figdict["imgurl"] = ""
 
@@ -358,7 +364,9 @@ def _xml_figures_openlearn(xml_content, coursecode="", pageurl="", root=None):
                 figdict["itemack"] = flatten(rights.find("ItemAcknowledgement"))
         # print( 'figures',xsrc,caption,desc,src)
 
-        figdict["stub"] = figdict["srcurl"].split("/")[-1]
+        #figdict["stub"] = figdict["srcurl"].split("/")[-1]
+        #Use full image stub
+        figdict["stub"] = figdict["imgurl"].split("/")[-1]
         # print('xmlstub...',figdict['stub'])
         figdict["minstub"] = figdict["stub"].split(".")[0]
 
@@ -480,6 +488,16 @@ def _html_figures(
 
 
 # +
+def get_openlearn_html_zip(html_url, s=None):
+    """Get HTML zip file for OpenLearn Unit"""
+    if "content-section" not in html_url:
+        print("I don't think I can work with that HTML URL...")
+        return None
+
+    html_page_url_stub = html_url.split("/content-section")[0]
+    html_zip_url = "{}/altformat-html".format(html_page_url_stub)
+
+        
 # Page grabbers for OpenLearn content
 def get_openlearn_sc_page(html_url, s=None, xml_url=None, get_html=True):
     """Try to load a structured content page."""
