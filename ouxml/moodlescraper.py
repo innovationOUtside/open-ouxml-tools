@@ -289,13 +289,14 @@ def _xml_figures(xml_content, coursecode="", pageurl=""):
 from urllib.parse import urlsplit, urlunsplit
 
 
-def _xml_figures_openlearn(xml_content, coursecode="", pageurl=""):
+def _xml_figures_openlearn(xml_content, coursecode="", pageurl="", root=None):
     """Identify image elements and paths in OpenLearn XML."""
     figdicts = []
-    try:
-        root = etree.fromstring(xml_content)
-    except:
-        return False
+    if root is None or not len(root):
+        try:
+            root = etree.fromstring(xml_content)
+        except:
+            return False
     figures = []
     for t in ["Figure", "InlineFigure", "Equation", "InlineEquation"]:
         figures = figures + root.findall(".//{}".format(t))
@@ -502,7 +503,9 @@ def get_openlearn_sc_page(html_url, s=None, xml_url=None):
     sc = _get_page(sc_link, s)
 
     try:
+        print("Decoding utf-8...")
         raw = sc.content.decode("utf-8")
+        print("...done decoding utf-8")
     except:
         return None, None, None, None
 
@@ -514,9 +517,12 @@ def get_openlearn_sc_page(html_url, s=None, xml_url=None):
         typ = "HTML"
 
     # Get the full html_page
+    # For OpenLearn, do we really need to do this?
+    print("Getting full html...")
     full_html_url = "{}/altformat-html".format(html_page_url_stub)
     full_html = _get_page(full_html_url, s)
-
+    print("...done getting full html")
+    
     return typ, html_page_url_stub, raw, full_html.content  # .decode("utf-8")
 
 
@@ -561,13 +567,15 @@ def html_xml_save_openlearn(
         dbrowdict["courseTitle"] = flatten(root.find("CourseTitle"))
         dbrowdict["itemTitle"] = flatten(root.find("ItemTitle"))
         print("...done parsing XML")
+    else:
+        root = None
 
     if dbrowdict:
         print("saving xml into db...")
         DB[table].insert(dbrowdict)
         print("...done saving xml into db")
 
-    return typ, html_page_url, rawxml, html_src
+    return typ, html_page_url, rawxml, html_src, root
 
 
 def scrape_unit_openlearn_base(
@@ -595,7 +603,7 @@ def scrape_unit_openlearn_base(
         setup_DB("dummydb.db")
 
     for possible_sc_link in possible_sc_links:
-        typ, html_page_url, rawxml, html_src = html_xml_save_openlearn(
+        typ, html_page_url, rawxml, html_src, root = html_xml_save_openlearn(
             s, possible_sc_link, course_presentation=course_presentation
         )
         print(typ)
@@ -603,7 +611,10 @@ def scrape_unit_openlearn_base(
             print("trying images")
             print("going into _xml_figures_openlearn")
             _xml_figures_openlearn(
-                rawxml.encode("utf-8"), coursecode=coursecode, pageurl=html_page_url
+                rawxml.encode("utf-8"),
+                coursecode=coursecode,
+                pageurl=html_page_url,
+                root=root,
             )
             # Sometimes we can get a path to the image from the XML? Always for OpenLearn in Image[@src]?
             # Instead will have to fill the gaps in from the HTML.
