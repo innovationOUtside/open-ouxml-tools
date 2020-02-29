@@ -40,3 +40,5 @@ Once you have downloaded the assets, you can convert the XML to markdown files i
 In the above example, markdown files and images for the unit will appear in the `demo` directory.
 
 If you run this in MyBinder, from the notebook homepage, you can navigate to the folder the generated markdown was placed in. click on a markdown file link, and through the magic of Jupytext, edit it in a notebook UI.
+
+*OU staff may wonder whether the same approach can be used to convert OU-XML for current OU modules to markdown too. Yes it can... Get in touch...*
