@@ -493,12 +493,49 @@
         <xsl:apply-templates />
          <xsl:comment>ENDFIGURES</xsl:comment>
     </xsl:template>
-
+    
     <xsl:template match="MediaContent">
-         <xsl:comment>MEDIACONTENT</xsl:comment>
-        <xsl:apply-templates />
-         <xsl:comment>ENDMEDIACONTENT</xsl:comment>
+        <xsl:comment>MEDIACONTENT</xsl:comment>
+                <xsl:apply-templates />
+        <xsl:comment>ENDMEDIACONTENT</xsl:comment>
     </xsl:template>
+        
+    <xsl:template match="MediaContent[@type = 'video']">
+        <xsl:comment>MEDIACONTENT</xsl:comment>
+        <!-- Stricly this is for media and we should mathc on media type=='video' -->
+        <video><xsl:attribute name="width">80%</xsl:attribute><xsl:attribute name="download"/>
+            <source src='{str:split(@src, "\\")[last()]}' type="video/mp4" ></source>
+        </video>
+        <xsl:apply-templates />
+        <xsl:comment>ENDMEDIACONTENT</xsl:comment>
+    </xsl:template>
+        
+    <xsl:template match="SourceReference">
+        <xsl:text>&#xa;Reference: </xsl:text><xsl:apply-templates /><xsl:text>&#xa;&#xa;</xsl:text>
+    </xsl:template>
+   
+    <xsl:template match="Transcript">
+        <xsl:comment>TRANSCRIPT</xsl:comment>
+        <table border="1"><tr><td>
+        <xsl:apply-templates />
+            </td></tr></table>
+        <xsl:comment>ENDTRANSCRIPT</xsl:comment>
+    </xsl:template>
+    
+    <xsl:template match="Speaker">
+        <xsl:text>&#xa;__</xsl:text><xsl:apply-templates /><xsl:text>:__ </xsl:text>
+    </xsl:template>
+    
+    <xsl:template match="Remark">
+        <xsl:text>*</xsl:text><xsl:apply-templates /><xsl:text>*;&#xa;</xsl:text>
+    </xsl:template>
+    
+    <xsl:template match="Caption">
+        <xsl:text>&#xa;&#xa;</xsl:text>
+        <xsl:apply-templates />
+        <xsl:text>&#xa;&#xa;</xsl:text>
+    </xsl:template>
+
 
     <xsl:template match="Chemistry">
          <xsl:comment>CHEMISTRY</xsl:comment>
