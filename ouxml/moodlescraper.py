@@ -481,7 +481,7 @@ def _html_figures(
 
 # +
 # Page grabbers for OpenLearn content
-def get_openlearn_sc_page(html_url, s=None, xml_url=None):
+def get_openlearn_sc_page(html_url, s=None, xml_url=None, get_html=True):
     """Try to load a structured content page."""
     # html_page = _get_page('https://learn2.open.ac.uk/mod/repeatactivity/view.php?id=1349903&specialpage=1', s)
 
@@ -518,16 +518,21 @@ def get_openlearn_sc_page(html_url, s=None, xml_url=None):
 
     # Get the full html_page
     # For OpenLearn, do we really need to do this?
-    print("Getting full html...")
-    full_html_url = "{}/altformat-html".format(html_page_url_stub)
-    full_html = _get_page(full_html_url, s)
-    print("...done getting full html")
-    
-    return typ, html_page_url_stub, raw, full_html.content  # .decode("utf-8")
+    # We can get the html by just downloading the zip package
+    # The HTML zip package also has all the media assets in it?
+    if get_html:
+        print("Getting full html...")
+        full_html_url = "{}/altformat-html".format(html_page_url_stub)
+        full_html = _get_page(full_html_url, s)
+        _html = full_html.content 
+        print("...done getting full html")
+    else:
+        _html = ''
+    return typ, html_page_url_stub, raw, _html # .decode("utf-8")
 
 
 def html_xml_save_openlearn(
-    s=None, possible_sc_link=None, table="htmlxml", course_presentation=None
+    s=None, possible_sc_link=None, table="htmlxml", course_presentation=None, get_html=True
 ):
     """Save HTML and XML from an OpenLearn OU-XML document URL."""
 
@@ -539,7 +544,7 @@ def html_xml_save_openlearn(
         s = getSession()
 
     print("getting ou-xml")
-    typ, html_page_url, rawxml, html_src = get_openlearn_sc_page(possible_sc_link, s)
+    typ, html_page_url, rawxml, html_src = get_openlearn_sc_page(possible_sc_link, s, get_html=get_html)
 
     if typ:
         dbrowdict = {
@@ -604,7 +609,7 @@ def scrape_unit_openlearn_base(
 
     for possible_sc_link in possible_sc_links:
         typ, html_page_url, rawxml, html_src, root = html_xml_save_openlearn(
-            s, possible_sc_link, course_presentation=course_presentation
+            s, possible_sc_link, course_presentation=course_presentation, get_html=False
         )
         print(typ)
         if typ == "XML":

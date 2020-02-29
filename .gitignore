@@ -1,6 +1,6 @@
 .ipynb_checkpoints
 ouxml/*.ipynb
-newtest
+newtest*
 .DS_Store
 *.db
 .md
