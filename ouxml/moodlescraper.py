@@ -105,9 +105,9 @@ def setup_DB(dbname="test_vle_course_scraper_db.db", newdb=False):
     # but this also means we need to identify primary keys in tables?
 
     # Should really find a way to require a confirmation for this?
-    if newdb and os.path.isfile(newdb):
+    if newdb and os.path.isfile(dbname):
         print("Deleting old database: {}", dbname)
-        os.remove(newdb)
+        os.remove(dbname)
 
     print("Creating database connection: {}".format(dbname))
     DB = Database(dbname)
