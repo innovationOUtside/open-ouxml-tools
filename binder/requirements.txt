@@ -12,3 +12,5 @@ markdown
 
 nbzip
 jupyter_contrib_nbextensions
+
+.
