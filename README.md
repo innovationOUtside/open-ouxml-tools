@@ -1,5 +1,5 @@
 # open-ouxml-tools
-Tools for working with (open) OU-XML docs
+Tools for working with (open) OU-XML docs.
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/innovationOUtside/open-ouxml-tools/master)
 
