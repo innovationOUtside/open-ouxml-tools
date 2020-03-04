@@ -83,3 +83,4 @@ def ouxml2md_conversion(dbname, outdir, prefix):
     pages = pd.read_sql("SELECT * FROM htmlxml", DB.conn)
     pages.apply(hackfornow, outdir=outpath, axis=1)
     ouxml2md.openlearn_image_mapper(dbname, outdir, "images")
+    ouxml2md.split_into_subdirs(outdir)

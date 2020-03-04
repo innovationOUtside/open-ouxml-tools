@@ -3,24 +3,21 @@
 # coding: utf-8
 
 
-# !pip3 install markdownify
+# #!pip3 install markdownify
 from bs4 import BeautifulSoup
 from markdownify import markdownify as md
 
 
 from pkg_resources import resource_string
 
-xslt = resource_string(__name__, "xslt/ouxml2md.xslt")
-
-
 import lxml.html
 from lxml import etree
 
-xslt_doc = etree.fromstring(xslt)
-xslt_transformer = etree.XSLT(xslt_doc)
-
-
 import pathlib
+import base64
+
+# ##!pip3 install oyaml
+import oyaml as yaml
 
 
 def checkDirPath(path):
@@ -29,6 +26,10 @@ def checkDirPath(path):
 
 # Do some setup
 import os
+# Py3.7 supports ordered_dict natively?
+import collections
+import re
+import glob
 
 # If it looks like the file is down a directory path, make sure the path is there
 # If it isn't, the XSLT won't work when it tries to write the output files...
@@ -48,17 +49,26 @@ import pandas as pd
 from lxml import etree
 
 
+def get_file(fn):
+    """Get file content from local store."""
+    # This should work locally or in package
+    try:
+        txt = resource_string(__name__, fn)
+    except:
+        txt = open(fn).read()
+    return txt
+
+
 # TO DO - it would be better if the following accepted an XML string or the path to an XML file
-def transform_xml2md(xml, output_path_stub="testout"):
+def transform_xml2md(xml, xslt, output_path_stub=""):
     """Take an OU-XML document as a string 
        and transform the document to one or more markdown files."""
 
     check_outdir(output_path_stub)
 
-    # with open('xslt/ouxml2md.xslt','r') as f:
-    #    xslt_md = f.read()
-    xslt_md = xslt
-    xslt_doc = etree.fromstring(xslt_md)
+    _xslt = get_file(xslt)
+
+    xslt_doc = etree.fromstring(_xslt)
     xslt_transformer = etree.XSLT(xslt_doc)
 
     source_doc = etree.fromstring(xml.encode("utf-8"))
@@ -72,7 +82,7 @@ def transform_xml2md(xml, output_path_stub="testout"):
 
 
 def transformer(conn, key, val, output_path_stub="testout"):
-
+    """Grab XML and trasnform it to individual markdown files and toc file."""
     check_outdir(output_path_stub)
 
     # key / val is something like url / 1432311 ie a view resource ID
@@ -82,11 +92,11 @@ def transformer(conn, key, val, output_path_stub="testout"):
     # If there is more than one XML file returned, just go with the first one for now
     # TO DO - improve this behaviour if multiple files are returned
     dummy_xml = dummy_xml[0]
-    transform_xml2md(dummy_xml, output_path_stub=output_path_stub)
-
-
-import re
-import os
+    
+    # Generate individual markdown files from sessions
+    transform_xml2md(dummy_xml, xslt="xslt/ouxml2md.xslt", output_path_stub=output_path_stub)
+    # Generate table of contents as Unit_toc.md
+    transform_xml2md(dummy_xml, xslt="xslt/ouxml2toc.xslt", output_path_stub=output_path_stub)
 
 
 def _post_process(output_dir_path):
@@ -109,9 +119,6 @@ def _post_process(output_dir_path):
                 print("Rewriting {}".format(fnp))
                 with open(fnp, "w") as f:
                     f.write(txt)
-
-
-import os
 
 
 # TO DO - we need a better form of pattern matching and rewriting
@@ -141,13 +148,6 @@ def _directory_processor(srcdir, new_suffix="part_"):
             # for example w as 00
             os.rename(f"{srcdir}/{f}", f"{srcdir}/{new_suffix}{w}/{f}")
             # so testdir/stub_00_01.md becomes testdir/week_00/stub_00_01.md
-
-
-import re
-import os
-
-
-import jupytext
 
 
 # https://stackoverflow.com/a/29280824/454773
@@ -223,9 +223,6 @@ def generate_imgdict(imgkeys, DB):
 # OU_Course_Material_Assets.ipynb currently has scraper for getting a database together
 
 
-import os.path
-
-
 def _crossmatch_xml_html_links(imgdict, fn, imgdirpath="", rewrite=False):
     """ Try to reconcile XML paths to HTML image paths in supplied markdown file. """
 
@@ -249,9 +246,6 @@ def _crossmatch_xml_html_links(imgdict, fn, imgdirpath="", rewrite=False):
     return txt
 
 
-import re
-
-
 def crossmatch_xml_html_links(
     imgdict, imgdirpath="", contentdir=".", content_prefix=""
 ):
@@ -273,9 +267,6 @@ def crossmatch_xml_html_links(
         # We could save the md files to a table here, and perhaps also convert to ipynb in same table?
 
 
-import base64
-
-
 def save_image_from_db(x, imgdir="testimages"):
     """ Save image in db to file. """
 
@@ -285,9 +276,6 @@ def save_image_from_db(x, imgdir="testimages"):
         f.write(base64.decodebytes(img_data))
 
     return fn
-
-
-import os.path
 
 
 # OpenLearn image map
@@ -386,12 +374,102 @@ def _process_ouxml_doc(row, DB=None, _basedir="", _imgdir=""):
     )
 
 
-# Py3.7 supports ordered_dict natively?
-import collections
+# ## Structured Directory Generator
+#
+# Split flat directory into chapter directories.
+#
+# Note that we also need to update the image directory paths.
 
+# +
+# https://stackoverflow.com/a/47965711/454773  
+
+def update_image_paths(path):
+    """Update image paths in restructure file directories."""
+    for filepath in glob.iglob(f'{path.rstrip("/")}/*.md', recursive=True):
+        with open(filepath) as file:
+            s = file.read()
+        s = s.replace('](images/', '](../images/')
+        with open(filepath, "w") as file:
+            file.write(s)
+
+
+# -
+
+def split_into_subdirs(path, dirstub='session'):
+    """
+    Split flat file structure generated by OpenLearn process into subdirs.
+    Reset image paths.
+    """
+
+    # We expect filenames of form: STUB_MM_NN.md
+    # We generate directories of form STUB2_MM/STUB_MM_NN.md
+    chapters = []
+    for f in [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]:
+        chapter = f.split('_')[1]
+        if chapter not in chapters:
+            chapters.append(chapter)
+
+    for chapter in chapters:
+        os.makedirs(os.path.join(path, f'{dirstub}_{chapter}'))
+
+    for f in [f for f in os.listdir(path) if f.endswith('.md')]:
+        section = f.split('_')[1]
+        oldname = os.path.join(path, f'{f}')
+        newname = os.path.join(path, f'{dirstub}_{section}/{f}')
+        os.rename(oldname, newname)
+        
+        # Reset image paths first
+        with open(newname) as file:
+            s = file.read()
+        s = s.replace('](images/', '](../images/')
+        with open(newname, "w") as file:
+            file.write(s)
+            
+        # Reset toc
+        # TO DO
+        # This should be: individual numbered sessions and name sections within them
+
+
+# ## Table of contents generator
+#
+# This is achieved via an XSLT when the original files are generated.
+
+# +
+# #%pip install ruamel.yaml
+
+# +
+YAML_TOP = ("# Each entry has the following schema:\n"
+            "#\n"
+            "# - title: mytitle   # Title of chapter or section\n"
+            "#   url: /myurl  # URL of section relative to the /content/ folder.\n"
+            "#   sections:  # Contains a list of more entries that make up the chapter's sections\n"
+            "#   not_numbered: true  # if the section shouldn't have a number in the sidebar\n"
+            "#     (e.g. Introduction or appendices)\n"
+            "#   expand_sections: true  # if you'd like the sections of this chapter to always\n"
+            "#     be expanded in the sidebar.\n"
+            "#   external: true  # Whether the URL is an external link or points to content in the book\n"
+            "#\n"
+            "# Below are some special values that trigger specific behavior:\n"
+            "# - search: true  # Will provide a link to a search page\n"
+            "# - divider: true  # Will insert a divider in the sidebar\n"
+            "# - header: My Header  # Will insert a header with no link in the sidebar\n")
+
+YAML_WARN = ("#\n"
+             "# ==============================\n"
+             "# AUTOMATICALLY GENERATED TOC FILE.\n"
+             "# You should review the contents of this file, re-order items as you wish,\n"
+             "# and nest chapters in sections if you wish. The ======= symbols represent \n"
+             "# folder breaks.\n"
+             "# \n"
+             "# See the demo `toc.yml` for the right structure to follow. You can \n"
+             "# generate a demo book by running `jupyter-book create mybook --demo`\n"
+             "# ==============================\n\n\n")
+
+#print(build_toc('../newtest8'))
+# -
 
 def section_item(title, url, not_numbered="true"):
-    """ Create an ordered dict to add an item to the toc.yml """
+    """Create an ordered dict to add an item to the toc.yml"""
     _contents = collections.OrderedDict()
     _contents["title"] = title
     _contents["url"] = url
@@ -400,8 +478,109 @@ def section_item(title, url, not_numbered="true"):
 
 
 def section(title, url, sections=None, not_numbered="true", expand_sections="true"):
-    """ Create an ordered dict to add an item to the toc.yml """
+    """Create an ordered dict to add an item to the toc.yml"""
     _contents = section_item(title, url, not_numbered)
     if sections:
         _contents["sections"] = sections
     return _contents
+
+
+# +
+# #!ls ../newtest
+
+# +
+def generate_section_df(path='.', stub='Part_', suffix='md'):
+    """Generate a dataframe to help structure generated markdown files."""
+    rows=[]
+
+    for fn in [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) 
+               and f.startswith(stub) and f.endswith(suffix)]:
+
+        items = fn.split('_')
+        if len(items) > 2:
+            ch = int(items[-2])
+            s = int(items[-1].split('.')[0])
+            rows.append({'filename': fn, 'chapter': ch,
+                         'section': s, 'stub': fn.split('.')[0]})
+
+    if rows:
+        df = pd.DataFrame(rows).sort_values(['chapter', 'section'])
+        df['path'] = df.apply(lambda x: section(x['stub'], path + x['stub']), axis=1)
+    else:
+        df = pd.DataFrame()
+    return df
+
+#df = generate_section_df('../newtest')
+#df.head()
+#fn filename, ch chapter, s section, p stub, y path
+
+
+# +
+
+top_yaml = '''
+# This file contains the order and numbering for all sections in the book.
+#
+# It is a sample TOC file to help you get started. Fill it out with entries
+# for your own content.
+#
+# Each entry has the following schema:
+#
+# - title: mytitle   # Title of chapter or section
+#   url: /myurl  # URL of section relative to the /content/ folder.
+#   sections:  # Contains a list of more entries that make up the chapter's sections
+#   not_numbered: true  # if the section shouldn't have a number in the sidebar
+#     (e.g. Introduction or appendices)
+#   expand_sections: true  # if you'd like the sections of this chapter to always
+#     be expanded in the sidebar.
+#   external: true  # Whether the URL is an external link or points to content in the book
+#
+# Below are some special values that trigger specific behavior:
+# - search: true  # Will provide a link to a search page
+# - divider: true  # Will insert a divider in the sidebar
+# - header: My Header  # Will insert a header with no link in the sidebar
+#
+# See the links below for an example.
+
+# Top-level page
+- title: Home
+  url: /intro
+  not_numbered: true
+
+# External link
+- title: GitHub repository
+  url: https://github.com/ouseful-testing/mybookname2
+  external: true
+  not_numbered: true
+
+# Adds a searchbar link
+- title: Search
+  search: true
+
+# Divider for meta-pages and content page
+- divider: true
+
+# Add a header and sample content section
+- header: Demo textbook
+
+'''
+
+
+# +
+#yml = yaml.load(top_yaml)
+#yml
+
+# +
+#ss={'g':[]}
+#section('title', 'url',[section('titlew', 'urwl'), section('tsitlew', 'urswl')])
+
+def testg(x):
+    t = section(x.iloc[0]['filename'],'/testdir/'+x.iloc[0]['stub'],x[1:]['path'].to_list())
+    if t not in ss['g']:
+        ss['g'].append(t)
+    return x
+    
+#df.groupby('chapter').apply(testg)
+#print(yaml.dump(yml+ss['g'], default_flow_style=False))
+# -
+
+

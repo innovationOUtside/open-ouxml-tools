@@ -18,7 +18,8 @@ setup(
         'sqlite_utils',
         'markdownify',
         'jupytext',
-        'markdown'
+        'markdown',
+        'ruamel.yaml'
     ],
     entry_points='''
         [console_scripts]

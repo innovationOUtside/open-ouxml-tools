@@ -9,6 +9,7 @@ sqlite_utils
 markdownify
 jupytext
 markdown
+ruamel.yaml
 
 nbzip
 jupyter_contrib_nbextensions
