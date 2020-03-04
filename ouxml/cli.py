@@ -2,7 +2,7 @@ import click
 import os
 import pandas as pd
 from sqlite_utils import Database
-
+import shutil
 import ouxml.moodlescraper as mscpr
 import ouxml.OU_XML2md_Converter as ouxml2md
 
@@ -71,13 +71,19 @@ def get_db_units(dbname, term):
 )
 @click.option("--prefix", default="Part", help="Filename prefix (default: Part)")
 def ouxml2md_conversion(dbname, outdir, prefix):
-    """Convert item(s) in database to markdown."""
+    """Convert item(s) in database to markdown.
+       Note that this clobbers the directory we write into.
+    """
 
     def hackfornow(row, col="itemTitle", outdir="oer_md"):
         """Need to do this all properly, eg where lots of units in db..."""
         ouxml2md.transformer(DB.conn, col, row[col], outdir)
 
     outpath = os.path.join(outdir, prefix)
+    
+    print(f"Deleting previous {outdir} directory.")
+    shutil.rmtree(outdir)
+
     print(f"Rendering files into dir: {outdir}")
     DB = Database(dbname)
     pages = pd.read_sql("SELECT * FROM htmlxml", DB.conn)
