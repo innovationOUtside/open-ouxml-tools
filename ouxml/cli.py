@@ -66,7 +66,7 @@ def get_db_units(dbname, term):
 )
 @click.option(
     "--outdir",
-    default="oer_md",
+    default="content",
     help="Markdown file output directory (default: oer_md)",
 )
 @click.option("--prefix", default="Part", help="Filename prefix (default: Part)")
@@ -75,14 +75,15 @@ def ouxml2md_conversion(dbname, outdir, prefix):
        Note that this clobbers the directory we write into.
     """
 
-    def hackfornow(row, col="itemTitle", outdir="oer_md"):
+    def hackfornow(row, col="itemTitle", outdir="content"):
         """Need to do this all properly, eg where lots of units in db..."""
         ouxml2md.transformer(DB.conn, col, row[col], outdir)
 
     outpath = os.path.join(outdir, prefix)
     
-    print(f"Deleting previous {outdir} directory.")
-    shutil.rmtree(outdir)
+    if os.path.exists(outdir) and os.path.isdir(outdir):
+        print(f"Deleting previous {outdir} directory.")
+        shutil.rmtree(outdir)
 
     print(f"Rendering files into dir: {outdir}")
     DB = Database(dbname)
@@ -90,3 +91,7 @@ def ouxml2md_conversion(dbname, outdir, prefix):
     pages.apply(hackfornow, outdir=outpath, axis=1)
     ouxml2md.openlearn_image_mapper(dbname, outdir, "images")
     ouxml2md.split_into_subdirs(outdir)
+    _toc = ouxml2md.create_minimal_toc_from_dir(path=outdir, DB=DB)
+    print(f"Generating table of contents file as: index.rst")
+    with open('index.rst', 'w') as f:
+        f.write(_toc)

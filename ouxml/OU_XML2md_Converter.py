@@ -393,6 +393,64 @@ def update_image_paths(path):
             file.write(s)
 
 
+# +
+_toc = '''
+{title}
+{_title}
+
+Content generated from the OpenLearn Unit `{title} <{url}>`_.
+
+
+Contents:
+=========
+
+{_toc_list}
+'''
+
+def create_minimal_toc_from_dir(path='.', dbname='openlearn_oer.db', DB=None):
+    """Create minimal table of contents from content directory."""
+    if DB is None:
+        DB = Database(dbname)
+
+    _toc_list = ''
+    for d in [d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))]:
+        session = d.replace("_", " ").capitalize()
+        _toc_list = f'{_toc_list}\n\n{session}\n{len(session)*"-"}\n\n'
+        _toc_list = f'{_toc_list}\n.. toctree::\n    :maxdepth: 2\n    :glob:\n\n    {os.path.join(path, d, "*")}\n'
+        
+    url = pd.read_sql("SELECT * FROM htmlxml ", DB.conn)['html_url'][0]+'/content-section-0'
+    title = pd.read_sql("SELECT * FROM htmlxml ", DB.conn)['itemTitle'][0]
+    _title = '='*len(title)
+    return _toc.format(title=title, _title=_title, _toc_list=_toc_list, url=url)
+
+def create_simple_toc_from_dir(path='.', dbname='openlearn_oer.db', DB=None):
+    """Create table of contents from directory."""
+    if DB is None:
+        DB = Database(dbname)
+    url = pd.read_sql("SELECT * FROM htmlxml ", DB.conn)['html_url'][0]+'/content-section-0'
+    _toc_list = ''
+    for root, paths, files in os.walk(path):
+        paths.sort()
+        if root != path and root.split('/')[-1] != 'images':
+            session = root.replace(path, '').strip('/').replace("_", " ").capitalize()
+            _toc_list = f'{_toc_list}\n\n{session}\n{len(session)*"-"}\n\n'
+            for fpath in [os.path.join(root, f) for f in sorted(files) if os.path.isfile(os.path.join(root, f)) and f.endswith('.md')]:
+                with open(fpath) as f:
+                    header = f.readline()
+                    cleanpath = os.path.splitext(fpath)[0]
+                    _toc_list = f'{_toc_list}\n.. toctree::\n    :maxdepth: 2\n    :caption: {header.lstrip("#").strip()}\n\n    {cleanpath}\n'
+    title = pd.read_sql("SELECT * FROM htmlxml ", DB.conn)['itemTitle'][0]
+    _title = '='*len(title)
+    return _toc.format(title=title, _title=_title, _toc_list=_toc_list, url=url)
+
+#print(_toc_list)
+#_toc_list = create_simple_toc_from_dir(path='.')
+#path = "../newtest12"
+#print(_toc)
+#print(create_minimal_toc_from_dir('../newtest13/'))
+
+
+
 # -
 
 def split_into_subdirs(path, dirstub='session'):
