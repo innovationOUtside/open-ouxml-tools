@@ -413,7 +413,7 @@ def create_minimal_toc_from_dir(path='.', dbname='openlearn_oer.db', DB=None):
         DB = Database(dbname)
 
     _toc_list = ''
-    for d in [d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))]:
+    for d in sorted([d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d)) and d != 'images']):
         session = d.replace("_", " ").capitalize()
         _toc_list = f'{_toc_list}\n\n{session}\n{len(session)*"-"}\n\n'
         _toc_list = f'{_toc_list}\n.. toctree::\n    :maxdepth: 2\n    :glob:\n\n    {os.path.join(path, d, "*")}\n'
@@ -447,7 +447,7 @@ def create_simple_toc_from_dir(path='.', dbname='openlearn_oer.db', DB=None):
 #_toc_list = create_simple_toc_from_dir(path='.')
 #path = "../newtest12"
 #print(_toc)
-#print(create_minimal_toc_from_dir('../newtest13/'))
+#print(create_minimal_toc_from_dir('../newtest9/'))
 
 
 
