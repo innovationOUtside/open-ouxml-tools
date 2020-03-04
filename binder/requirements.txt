@@ -10,6 +10,7 @@ markdownify
 jupytext
 markdown
 ruamel.yaml
+oyaml
 
 nbzip
 jupyter_contrib_nbextensions

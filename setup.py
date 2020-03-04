@@ -19,7 +19,8 @@ setup(
         'markdownify',
         'jupytext',
         'markdown',
-        'ruamel.yaml'
+        'ruamel.yaml',
+        'oyaml'
     ],
     entry_points='''
         [console_scripts]
