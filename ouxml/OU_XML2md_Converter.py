@@ -96,7 +96,7 @@ def transformer(conn, key, val, output_path_stub="testout"):
     # Generate individual markdown files from sessions
     transform_xml2md(dummy_xml, xslt="xslt/ouxml2md.xslt", output_path_stub=output_path_stub)
     # Generate table of contents as Unit_toc.md
-    transform_xml2md(dummy_xml, xslt="xslt/ouxml2toc.xslt", output_path_stub=output_path_stub)
+    #transform_xml2md(dummy_xml, xslt="xslt/ouxml2toc.xslt", output_path_stub=output_path_stub)
 
 
 def _post_process(output_dir_path):
