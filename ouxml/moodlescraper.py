@@ -93,6 +93,48 @@ def _get_page(url, s=None):
 # ===
 
 
+# +
+create_htmlxml = '''
+CREATE TABLE IF NOT EXISTS htmlxml (
+    possible_sc_link TEXT,
+    doctype TEXT,
+    html_url TEXT,
+    xml TEXT,
+    course_presentation TEXT,
+    courseCode TEXT,
+    courseTitle TEXT,
+    itemTitle TEXT
+);
+'''
+create_xmlfigures = '''
+CREATE TABLE IF NOT EXISTS xmlfigures (
+    xpageurl TEXT,
+    caption TEXT,
+    src TEXT,
+    coursecode TEXT,
+    desc TEXT,
+    owner TEXT,
+    item TEXT,
+    itemack TEXT,
+    srcurl TEXT,
+    x_folderhash TEXT,
+    x_contenthash TEXT,
+    imgurl TEXT,
+    alt TEXT,
+    stub TEXT,
+    minstub TEXT
+);
+'''
+
+create_imagetest = '''
+CREATE TABLE IF NOT EXISTS imagetest (
+    b64image BLOB,
+    stub TEXT,
+    minstub TEXT
+);'''
+
+# -
+
 def setup_DB(dbname="test_vle_course_scraper_db.db", newdb=False):
     """Create a new database and database connection."""
 
@@ -111,7 +153,12 @@ def setup_DB(dbname="test_vle_course_scraper_db.db", newdb=False):
 
     print("Creating database connection: {}".format(dbname))
     DB = Database(dbname)
-
+    
+    print('Create tables...')
+    c = DB.conn.cursor()
+    c.execute(create_htmlxml)
+    c.execute(create_xmlfigures)
+    c.execute(create_imagetest)
     return DB
 
 
