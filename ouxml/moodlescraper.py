@@ -832,6 +832,7 @@ def getUnitLocations(q="", goforit=False):
     # The OPML is linear and mixes links to content twith links to topic feeds
     # Need to harvest by topic?
     units = []
+    _tmp = []
     for item in items:
         unit = {}
         it = item.get("text")
@@ -839,6 +840,9 @@ def getUnitLocations(q="", goforit=False):
         if it.startswith("Unit content for"):
             it = it.replace("Unit content for", "")
             url = item.get("htmlUrl")
+            if url in _tmp:
+                continue
+            _tmp.append(url)
             rssurl = item.get("xmlUrl")
             unit["url"] = url
             unit["srcurl"] = rssurl
@@ -849,7 +853,7 @@ def getUnitLocations(q="", goforit=False):
             if goforit:
                 c = requests.get(xmlurl)
                 _xml_figures(c.content)
-        units.append(unit)
+            units.append(unit)
 
     if q:
         units = [
@@ -859,3 +863,82 @@ def getUnitLocations(q="", goforit=False):
             and all(word in unit["name"].lower() for word in q.lower().split())
         ]
     return units
+
+
+# ## Generate HTML Tables of Unit Listings
+
+# +
+import pandas as pd
+
+
+def rowparse(row):
+    """Parse each row for creating HTML table."""
+    url = row['url']
+    path = url.replace('https://www.open.edu/openlearn/', '').split('/')[:-1]
+    stub = path[-1]
+    section = path[0]
+    subsection = '/'.join(path[1:-2]) if len(path) > 2 else ''
+    name = row['name']
+    path = '/'.join(path)
+    return pd.Series([path, stub, section, subsection])
+
+
+
+# -
+
+def get_units_df(q=''):
+    """Get OpenLearn unit listing as a dataframe."""
+    units = getUnitLocations(q=q)
+    df = pd.DataFrame(units)
+    df[['path', 'stub', 'section', 'subsection']] = df.apply(rowparse, axis=1)
+    df = df.sort_values(['section', 'subsection', 'name'])
+    return df
+
+
+def add_github_issue_link(df):
+    """Generate link to open appropriate Github issue."""
+    df['issue_link'] = df.apply(lambda row: "../../issues/new?title=Fetch%20https://www.open.edu/openlearn}&body={x['url']}", axis=1)
+    return df
+
+
+# +
+def simple_table(df, html_col='html'):
+    """Generate a simple table of units."""
+    def _add_row(r):
+        """Generate html row."""
+        return f'''<tr><td>{r['section']}</td><td>{r['subsection']}</td><td><a href="{r['url']}">{r['name']}</a><td>'''
+    df['html'] = df.apply(_add_row, axis=1)
+    table_html = '''
+<table>
+{rows}
+</table>
+'''.format(rows='\n'.join(df[html_col].to_list()))
+    return df
+
+def github_link_table(df, html_col='html'):
+    """Generate a table of units with Github issue links."""
+    def _add_row(r):
+        """Generate html row."""
+        return f'''<tr><td>{r['section']}</td>
+        <td>{r['subsection']}</td>
+        <td><a href="{r['url']}">{r['name']}</a></td>
+        <td><a href="{r['issue_link']}">Grab Unit into this repo</a></td>'''
+    df = add_github_issue_link(df)
+    df['html'] = df.apply(_add_row, axis=1)
+    table_html = '''
+<table>
+{rows}
+</table>
+'''.format(rows='\n'.join(df[html_col].to_list()))
+    return df
+
+
+# -
+
+def get_units_table_html(df, html_col='html', typ='simple'):
+    """Return HTML from dataframe."""
+    if typ=='github':
+        table_html = '\n'.join(github_link_table(df)[html_col])
+    else:
+        table_html = '\n'.join(simple_table(df)[html_col])
+    return table_html
