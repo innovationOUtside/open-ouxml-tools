@@ -907,13 +907,13 @@ def simple_table(df, html_col='html'):
     def _add_row(r):
         """Generate html row."""
         return f'''<tr><td>{r['section']}</td><td>{r['subsection']}</td><td><a href="{r['url']}">{r['name']}</a><td>'''
-    df['html'] = df.apply(_add_row, axis=1)
+    df[html_col] = df.apply(_add_row, axis=1)
     table_html = '''
 <table>
 {rows}
 </table>
 '''.format(rows='\n'.join(df[html_col].to_list()))
-    return df
+    return table_html
 
 def github_link_table(df, html_col='html'):
     """Generate a table of units with Github issue links."""
@@ -924,21 +924,29 @@ def github_link_table(df, html_col='html'):
         <td><a href="{r['url']}">{r['name']}</a></td>
         <td><a href="{r['issue_link']}">Grab Unit into this repo</a></td>'''
     df = add_github_issue_link(df)
-    df['html'] = df.apply(_add_row, axis=1)
+    df[html_col] = df.apply(_add_row, axis=1)
     table_html = '''
 <table>
 {rows}
 </table>
 '''.format(rows='\n'.join(df[html_col].to_list()))
-    return df
+    return table_html
 
 
-# -
 
-def get_units_table_html(df, html_col='html', typ='simple'):
+# +
+def get_units_table_html_from_df(df, typ='simple'):
     """Return HTML from dataframe."""
     if typ=='github':
-        table_html = '\n'.join(github_link_table(df)[html_col])
+        table_html = github_link_table(df)
     else:
-        table_html = '\n'.join(simple_table(df)[html_col])
+        table_html = simple_table(df)
     return table_html
+
+def get_units_table_html(typ='simple'):
+    """Get units HTML table."""
+    df = get_units_df()
+    return get_units_table_html_from_df(df, typ)
+# -
+
+
