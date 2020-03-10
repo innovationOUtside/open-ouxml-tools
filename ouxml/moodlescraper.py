@@ -26,6 +26,7 @@ from lxml import etree
 import unicodedata
 import base64
 import os
+import urllib.parse
 
 
 import pandas as pd
@@ -897,7 +898,12 @@ def get_units_df(q=''):
 
 def add_github_issue_link(df):
     """Generate link to open appropriate Github issue."""
-    df['issue_link'] = df.apply(lambda row: "../../issues/new?title=Fetch%20https://www.open.edu/openlearn}&body={x['url']}", axis=1)
+    def _generate_issue_link(row):
+        """Generate link to open issue."""
+        args = {'title': 'Fetch https://www.open.edu/openlearn',
+                'body': row['url']}
+        return "../../issues/new?" + urllib.parse.urlencode(args)
+    df['issue_link'] = df.apply(_generate_issue_link, axis=1)
     return df
 
 
@@ -947,6 +953,29 @@ def get_units_table_html(typ='simple'):
     """Get units HTML table."""
     df = get_units_df()
     return get_units_table_html_from_df(df, typ)
+
+
+# +
+TEMPLATE='''
+# OpenLearn Units
+
+The following table itemises currently available open educational course units on 
+the Open University [OpenLearn](https://www.open.edu/openlearn) website.
+
+If you are viewing this page from your own copy of this repository,
+clicking on the `Grab Unit into this repo` link will create a new issue that
+will pull the content into your repository (you will need to submit the issue 
+by clicking the green *Submit this issue* button at the bottom right of the opened issue page).
+
+{openlearn_units_table}
+'''
+
+def get_units_table_page(template=TEMPLATE, typ='simple'):
+    """Generate a page containing OpenLearn links table."""
+    return template.format(openlearn_units_table=get_units_table_html(typ=typ))
+
+# +
+#print(get_units_table_page(typ='github'))
 # -
 
 
