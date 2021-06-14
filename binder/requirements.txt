@@ -15,4 +15,6 @@ oyaml
 nbzip
 jupyter_contrib_nbextensions
 
+git+https://github.com/psychemedia/jupyterserverproxy-datasette-demo.git
+
 .
