@@ -3,6 +3,8 @@ Tools for working with (open) OU-XML docs.
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/innovationOUtside/open-ouxml-tools/master)
 
+Open demo direclty: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/innovationOUtside/open-ouxml-tools/HEAD?filepath=Demo.ipynb)
+
 This package provides a range of command line and API tools for:
 
 - grabbing OU-XML "source" versions of OpenLearn units, along with related image assets, and storing them in a SQLite3 database;
