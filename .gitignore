@@ -2,6 +2,6 @@
 ouxml/*.ipynb
 newtest*
 .DS_Store
-*.db
+
 .md
 __pycache__
