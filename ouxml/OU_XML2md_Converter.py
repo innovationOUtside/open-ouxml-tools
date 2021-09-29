@@ -7,13 +7,13 @@
 from bs4 import BeautifulSoup
 from markdownify import markdownify as md
 
-
 from pkg_resources import resource_string
 
 import lxml.html
 from lxml import etree
 
-import pathlib
+from pathlib import Path
+
 import base64
 
 # ##!pip3 install oyaml
@@ -21,7 +21,7 @@ import oyaml as yaml
 
 
 def checkDirPath(path):
-    pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+    Path(path).mkdir(parents=True, exist_ok=True)
 
 
 # Do some setup
@@ -58,11 +58,18 @@ def get_file(fn):
         txt = open(fn).read()
     return txt
 
+def get_xslt():
+    """Return xlst file as text."""
+
 
 # TO DO - it would be better if the following accepted an XML string or the path to an XML file
-def transform_xml2md(xml, xslt, output_path_stub=""):
+def transform_xml2md(xml, xslt="xslt/ouxml2md.xslt", output_path_stub=""):
     """Take an OU-XML document as a string 
        and transform the document to one or more markdown files."""
+
+    if xml.endswith('.xml') and Path(xml).is_file():
+        with open(xml, 'r') as f:
+            xml = f.read()
 
     check_outdir(output_path_stub)
 

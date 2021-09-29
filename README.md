@@ -41,4 +41,9 @@ In the above example, markdown files and images for the unit will appear in the 
 
 If you run this in MyBinder, from the notebook homepage, you can navigate to the folder the generated markdown was placed in. click on a markdown file link, and through the magic of Jupytext, edit it in a notebook UI.
 
+We can also generate the markdown output from an XML file:
+
+`ouxmlfile2md XML_FILE_PATH`
+
+
 *OU staff may wonder whether the same approach can be used to convert OU-XML for current OU modules to markdown too. Yes it can... Get in touch...*

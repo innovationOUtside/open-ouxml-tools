@@ -28,5 +28,6 @@ setup(
         ouxml_units = ouxml.cli:get_units
         ouxml_db_units = ouxml.cli:get_db_units
         ouxml2md = ouxml.cli:ouxml2md_conversion
+        ouxmlfile2md = ouxml.cli:xmlfile2md
     ''',
 )

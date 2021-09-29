@@ -372,7 +372,7 @@
     </xsl:template>
 
     <xsl:template match="ProgramListing">
-        <xsl:text>&#xa;&#xa;```bash&#xa;</xsl:text>
+        <xsl:text>&#xa;&#xa;```python&#xa;</xsl:text>
         <xsl:apply-templates />
         <xsl:text>&#xa;```&#xa;&#xa;</xsl:text>
     </xsl:template>
@@ -385,7 +385,7 @@
     </xsl:template>
 
     <xsl:template match="ComputerDisplay">
-        <xsl:text>&#xa;&#xa;```bash&#xa;</xsl:text>
+        <xsl:text>&#xa;&#xa;```python&#xa;</xsl:text>
         <xsl:apply-templates />
         <xsl:text>&#xa;```&#xa;&#xa;</xsl:text>
     </xsl:template>

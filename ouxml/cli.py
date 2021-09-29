@@ -6,7 +6,6 @@ import shutil
 import ouxml.moodlescraper as mscpr
 import ouxml.OU_XML2md_Converter as ouxml2md
 
-
 def droptable(conn, table):
     cursor = conn.cursor()
     cursor.execute("""DROP TABLE IF EXISTS {}""".format(table))
@@ -57,6 +56,14 @@ def get_db_units(dbname, term):
     print()
     df.apply(lambda x: print(x["courseCode"], x["itemTitle"]), axis=1)
 
+@click.command()
+@click.argument('path', default='.', type=click.Path(exists=True))
+@click.option('--xslt', '-c', default="xslt/ouxml2md.xslt",  help='XSLT path')
+@click.option('--out_path', '-c', default='md_out',  help='Out path stub')
+def xmlfile2md(path, xslt, out_path):
+	"""Convert XML file to markdown files."""
+	click.echo('Using XML file: {}'.format(path))
+	ouxml2md.transform_xml2md(path, xslt=xslt, output_path_stub=out_path)
 
 @click.command()
 @click.option(
