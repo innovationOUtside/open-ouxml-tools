@@ -1,14 +1,11 @@
-<xsl:stylesheet version="1.0"
-    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:exsl="http://exslt.org/common"
-    xmlns:str="http://exslt.org/strings" extension-element-prefixes="exsl">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:exsl="http://exslt.org/common" xmlns:str="http://exslt.org/strings" extension-element-prefixes="exsl">
 
     <!-- OU-XML tag descriptions at: https://learn3.open.ac.uk/mod/oucontent/view.php?id=124345 -->
 
     <!-- xmlns:functx="http://www.functx.com" -->
 
     <!-- Strip out any whitespace used to style layout of XML doc we're processing -->
-    <xsl:strip-space elements="*"/>
+    <xsl:strip-space elements="*" />
 
     <!-- Defining a parameter means we can pass values in -->
     <xsl:param name="filestub">test</xsl:param>
@@ -24,7 +21,7 @@
     -->
 
     <xsl:template match="/">
-        <xsl:apply-templates/>
+        <xsl:apply-templates />
     </xsl:template>
 
     <!-- some common HTMLy things... -->
@@ -76,11 +73,17 @@
         <xsl:text>&#xa;&#xa;![</xsl:text>
         <!-- <xsl:value-of select="@alt" /> -->
         <xsl:choose>
-         <xsl:when test="../Alternative"><xsl:value-of select="../Alternative" /></xsl:when>
-         <xsl:when test="../Description"><xsl:value-of select="../Description" /></xsl:when>
-         <xsl:otherwise>figure <xsl:value-of select='str:split(@src, "\\")[last()]' />
-             <!--<xsl:value-of select="generate-id()"/> -->
-         </xsl:otherwise>
+            <xsl:when test="../Alternative">
+                <xsl:value-of select="../Alternative" />
+            </xsl:when>
+            <xsl:when test="../Description">
+                <xsl:value-of select="../Description" />
+            </xsl:when>
+            <xsl:otherwise>
+                figure
+                <xsl:value-of select='str:split(@src, "\\")[last()]' />
+                <!--<xsl:value-of select="generate-id()"/> -->
+            </xsl:otherwise>
         </xsl:choose>
         <xsl:text>](</xsl:text>
         <!-- <xsl:value-of select="@src" /> -->
@@ -94,7 +97,10 @@
     <!-- I'm not sure what semantics of Quote are? eg it's used for SAQ questions? -->
     <xsl:template match="Quote">
         <xsl:text>&#xa;</xsl:text>
-        <xsl:comment>Quote id=<xsl:value-of select="@id" /></xsl:comment>
+        <xsl:comment>
+            Quote id=
+            <xsl:value-of select="@id" />
+        </xsl:comment>
         <xsl:apply-templates />
         <xsl:text>&#xa;&#xa;</xsl:text>
     </xsl:template>
@@ -133,14 +139,12 @@
     </xsl:template>
 
 
-
-
     <!-- OU-XML things -->
 
     <xsl:template match="Item">
         <!-- metadata? Or directory path? OR Readme in directory? Or contents list? -->
         <!-- <xsl:value-of select="@Module"/> - <xsl:value-of select="CourseTitle"/> -->
-        <xsl:apply-templates/>
+        <xsl:apply-templates />
     </xsl:template>
 
 
@@ -148,8 +152,8 @@
         <!-- metadata? -->
         <!-- How can we count which unit we are in and use that in setting filenames? -->
         <!-- <xsl:value-of select="UnitTitle"/> -->
-        <xsl:param name="filestub" select="position()"/>
-        <xsl:apply-templates/>
+        <xsl:param name="filestub" select="position()" />
+        <xsl:apply-templates />
     </xsl:template>
 
 
@@ -175,6 +179,19 @@
         <!-- test_{count(../preceding-sibling::node())}_{position()}.md -->
         <!-- <exsl:document method="html" href="{$filestub}_{count(../preceding-sibling::node())}_{position()}.md"> -->
         <exsl:document method="html" href="{$filestub}_{format-number(count(../preceding-sibling::Unit),'00')}_{format-number(count(preceding-sibling::Session)+1,'00')}.md">
+<xsl:text>---
+jupyter:
+  jupytext:
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.11.4
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
+---&#xa;&#xa;</xsl:text>
             <xsl:apply-templates />
         </exsl:document>
     </xsl:template>
@@ -195,8 +212,11 @@
         <xsl:text>&#xa;&#xa;</xsl:text>
     </xsl:template>
 
-
-
+    <xsl:template match="SubSection/Title">
+        <xsl:text>&#xa;&#xa;### </xsl:text>
+        <xsl:value-of select="." />
+        <xsl:text>&#xa;&#xa;</xsl:text>
+    </xsl:template>
 
     <xsl:template match="SubSection">
         <xsl:text>&#xa;&#xa;---&#xa;&#xa;</xsl:text>
@@ -247,11 +267,26 @@
 
     </xsl:template>
 
+    <xsl:template match="Activity//Discussion">
+        <xsl:text>&#xa;</xsl:text>
+        <xsl:comment> #endregion </xsl:comment>
+        <xsl:text>&#xa;</xsl:text>
+        <xsl:comment> #region heading_collapsed=true tags=["style-activity", "precollapse"] </xsl:comment>
+        <xsl:text>&#xa;#### Discussion&#xa;</xsl:text>
+        <xsl:text>&#xa;Click on the triangle in the sidebar, or run this cell, to reveal my solution.&#xa;</xsl:text>
+        <xsl:comment> #endregion </xsl:comment>
+        <xsl:text>&#xa;&#xa;</xsl:text>
+        <xsl:comment> #region tags=["style-activity"] </xsl:comment>
+        <xsl:apply-templates />
+        <xsl:comment> #endregion </xsl:comment>
+        <xsl:text>&#xa;</xsl:text>
+    </xsl:template>
+
     <xsl:template match="Discussion">
         <xsl:text>&#xa;&#xa;#### Discussion&#xa;</xsl:text>
         <xsl:apply-templates />
     </xsl:template>
-    
+
 
     <xsl:template match="Answer">
         <xsl:text>&#xa;&#xa;#### Answer&#xa;</xsl:text>
@@ -265,10 +300,10 @@
         <xsl:text>__</xsl:text>
     </xsl:template>
 
-    
+
     <xsl:template match="CaseStudy">
         <xsl:text>&#xa;&#xa;----&#xa;&#xa;### Case Study</xsl:text>
-           <xsl:apply-templates />
+        <xsl:apply-templates />
         <xsl:text>&#xa;&#xa;----&#xa;&#xa;</xsl:text>
     </xsl:template>
 
@@ -299,7 +334,8 @@
 
     <!-- ReferenceID and ReferenceStyle are further available attributes... -->
     <xsl:template match="Reference">
-        <xsl:text>* </xsl:text><xsl:apply-templates select="node()|text()" />
+        <xsl:text>* </xsl:text>
+        <xsl:apply-templates select="node()|text()" />
         <xsl:text> [link](</xsl:text>
         <xsl:value-of select="@src" />
         <xsl:text>)</xsl:text>
@@ -316,32 +352,37 @@
 
     <!-- Should we put the glossary in it's own document? Will this trump creating Backmatter doc? -->
     <xsl:template match="Glossary">
-       <exsl:document method="html" href="{$filestub}_{format-number(count(../preceding-sibling::Unit),'00')}_glossary.md">
-        <xsl:text>&#xa;&#xa;# Glossary&#xa;</xsl:text>
-        <xsl:apply-templates />
-      </exsl:document>
+        <exsl:document method="html" href="{$filestub}_{format-number(count(../preceding-sibling::Unit),'00')}_glossary.md">
+            <xsl:text>&#xa;&#xa;# Glossary&#xa;</xsl:text>
+            <xsl:apply-templates />
+        </exsl:document>
     </xsl:template>
 
     <!-- GlossaryItem elements go in the Backmatter/Glossary and
          have Term and Definition components
     -->
     <xsl:template match="GlossaryItem">
-       <xsl:apply-templates />
+        <xsl:apply-templates />
     </xsl:template>
 
-     <xsl:template match="Term">
-       <xsl:text>__</xsl:text><xsl:apply-templates /><xsl:text>__: </xsl:text>
+    <xsl:template match="Term">
+        <xsl:text>__</xsl:text>
+        <xsl:apply-templates />
+        <xsl:text>__: </xsl:text>
     </xsl:template>
 
     <xsl:template match="Definition">
-       <xsl:apply-templates />
+        <xsl:apply-templates />
         <xsl:text>&#xa;</xsl:text>
     </xsl:template>
 
 
     <xsl:template match="Box">
-        <xsl:apply-templates />
-        <xsl:text>&#xa;&#xa;</xsl:text>
+        <xsl:text>&#xa;</xsl:text>
+        <xsl:comment> #region tags=["style-box", "alert-success"] </xsl:comment>
+        <xsl:apply-templates /><xsl:text>&#xa;</xsl:text>
+        <xsl:comment> #endregion </xsl:comment>
+        <xsl:text>&#xa;</xsl:text>
     </xsl:template>
 
     <xsl:template match="Box/Heading">
@@ -355,12 +396,16 @@
         OPTIONAL: <Heading>, <Timing>, <Multipart> X, <MediaContent>, <Interaction> X, <Answer>, <Discussion>
     -->
     <xsl:template match="Activity">
+        <xsl:text>&#xa;</xsl:text>
+        <xsl:comment> #region tags=["style-activity"] </xsl:comment>
         <xsl:apply-templates />
-        <xsl:text>&#xa;&#xa;</xsl:text>
+        <xsl:text>&#xa;</xsl:text>
+        <xsl:comment> #endregion </xsl:comment>
+        <xsl:text>&#xa;</xsl:text>
     </xsl:template>
 
     <xsl:template match="Activity/Heading">
-        <xsl:text>&#xa;&#xa;### </xsl:text>
+        <xsl:text>&#xa;### </xsl:text>
         <xsl:value-of select="." />
         <xsl:text>&#xa;</xsl:text>
     </xsl:template>
@@ -382,6 +427,16 @@
         <xsl:text>`</xsl:text>
         <xsl:apply-templates />
         <xsl:text>`</xsl:text>
+    </xsl:template>
+
+    <xsl:template match="Activity//ComputerDisplay">
+        <xsl:text>&#xa;</xsl:text>
+        <xsl:comment> #endregion </xsl:comment>
+        <xsl:text>&#xa;&#xa;```python tags=["style-activity"]&#xa;</xsl:text>
+        <xsl:apply-templates />
+        <xsl:text>&#xa;```&#xa;</xsl:text>
+        <xsl:text>&#xa;&#xa;</xsl:text>
+        <xsl:comment> #region tags=["style-activity"] </xsl:comment>
     </xsl:template>
 
     <xsl:template match="ComputerDisplay">
@@ -410,18 +465,18 @@
     </xsl:template>
 
 
-
     <!-- TO DO -->
 
     <!-- is there a transcript element? -->
 
 
-
-
     <xsl:template match="SideNote">
-        <div style='background:lightblue'>
-            <xsl:apply-templates/>
-        </div>
+        <xsl:text>&#xa;</xsl:text>
+        <xsl:comment> #region tags=["style-sidenote", "alert-warning"] </xsl:comment>
+        <xsl:apply-templates />
+        <xsl:text>&#xa;</xsl:text>
+        <xsl:comment> #endregion </xsl:comment>
+        <xsl:text>&#xa;</xsl:text>
     </xsl:template>
 
     <xsl:template match="SideNoteParagraph">
@@ -431,11 +486,10 @@
     </xsl:template>
 
 
-
     <xsl:template match="Tables">
-         <xsl:comment>TABLES</xsl:comment>
+        <xsl:comment>TABLES</xsl:comment>
         <xsl:apply-templates />
-         <xsl:comment>ENDTABLES</xsl:comment>
+        <xsl:comment>ENDTABLES</xsl:comment>
     </xsl:template>
 
     <xsl:template match="Table">
@@ -483,47 +537,59 @@
 
 
     <xsl:template match="Figures">
-         <xsl:comment>FIGURES</xsl:comment>
+        <xsl:comment>FIGURES</xsl:comment>
         <xsl:apply-templates />
-         <xsl:comment>ENDFIGURES</xsl:comment>
+        <xsl:comment>ENDFIGURES</xsl:comment>
     </xsl:template>
-    
+
     <xsl:template match="MediaContent">
         <xsl:comment>MEDIACONTENT</xsl:comment>
-                <xsl:apply-templates />
+        <xsl:apply-templates />
         <xsl:comment>ENDMEDIACONTENT</xsl:comment>
     </xsl:template>
-        
+
     <xsl:template match="MediaContent[@type = 'video']">
         <xsl:comment>MEDIACONTENT</xsl:comment>
         <!-- Stricly this is for media and we should mathc on media type=='video' -->
-        <video><xsl:attribute name="width">80%</xsl:attribute><xsl:attribute name="download"/>
-            <source src='{str:split(@src, "\\")[last()]}' type="video/mp4" ></source>
+        <video>
+            <xsl:attribute name="width">80%</xsl:attribute>
+            <xsl:attribute name="download" />
+            <source src='{str:split(@src, "\\")[last()]}' type="video/mp4"></source>
         </video>
         <xsl:apply-templates />
         <xsl:comment>ENDMEDIACONTENT</xsl:comment>
     </xsl:template>
-        
+
     <xsl:template match="SourceReference">
-        <xsl:text>&#xa;Reference: </xsl:text><xsl:apply-templates /><xsl:text>&#xa;&#xa;</xsl:text>
+        <xsl:text>&#xa;Reference: </xsl:text>
+        <xsl:apply-templates />
+        <xsl:text>&#xa;&#xa;</xsl:text>
     </xsl:template>
-   
+
     <xsl:template match="Transcript">
         <xsl:comment>TRANSCRIPT</xsl:comment>
-        <table border="1"><tr><td>
-        <xsl:apply-templates />
-            </td></tr></table>
+        <table border="1">
+            <tr>
+                <td>
+                    <xsl:apply-templates />
+                </td>
+            </tr>
+        </table>
         <xsl:comment>ENDTRANSCRIPT</xsl:comment>
     </xsl:template>
-    
+
     <xsl:template match="Speaker">
-        <xsl:text>&#xa;__</xsl:text><xsl:apply-templates /><xsl:text>:__ </xsl:text>
+        <xsl:text>&#xa;__</xsl:text>
+        <xsl:apply-templates />
+        <xsl:text>:__ </xsl:text>
     </xsl:template>
-    
+
     <xsl:template match="Remark">
-        <xsl:text>*</xsl:text><xsl:apply-templates /><xsl:text>*;&#xa;</xsl:text>
+        <xsl:text>*</xsl:text>
+        <xsl:apply-templates />
+        <xsl:text>*;&#xa;</xsl:text>
     </xsl:template>
-    
+
     <xsl:template match="Caption">
         <xsl:text>&#xa;&#xa;</xsl:text>
         <xsl:apply-templates />
@@ -532,13 +598,15 @@
 
 
     <xsl:template match="Chemistry">
-         <xsl:comment>CHEMISTRY</xsl:comment>
+        <xsl:comment>CHEMISTRY</xsl:comment>
         <xsl:apply-templates />
-         <xsl:comment>ENDCHEMISTRY</xsl:comment>
+        <xsl:comment>ENDCHEMISTRY</xsl:comment>
     </xsl:template>
 
     <xsl:template match="Equation/MathML/math">
-        <xsl:text> $$</xsl:text><xsl:value-of select="." /><xsl:text> $$ </xsl:text>
+        <xsl:text> $$</xsl:text>
+        <xsl:value-of select="." />
+        <xsl:text> $$ </xsl:text>
     </xsl:template>
 
     <xsl:template match="Figure">
@@ -549,10 +617,14 @@
         <xsl:text> ![</xsl:text>
         <!-- <xsl:value-of select="@alt" /> -->
         <xsl:choose>
-         <xsl:when test="../Alternative"><xsl:value-of select="../Alternative" /></xsl:when>
-         <xsl:otherwise>inlinefigure <xsl:value-of select='str:split(@src, "\\")[last()]' />
-             <!--<xsl:value-of select="generate-id()"/>-->
-         </xsl:otherwise>
+            <xsl:when test="../Alternative">
+                <xsl:value-of select="../Alternative" />
+            </xsl:when>
+            <xsl:otherwise>
+                inlinefigure
+                <xsl:value-of select='str:split(@src, "\\")[last()]' />
+                <!--<xsl:value-of select="generate-id()"/>-->
+            </xsl:otherwise>
         </xsl:choose>
         <xsl:text>](</xsl:text>
         <!-- There is a ?display=inline-block arg we could add at the end but this would break image link reconciliation? -->
@@ -561,24 +633,27 @@
     </xsl:template>
 
     <xsl:template match="Extract">
-         <xsl:comment>EXTRACT</xsl:comment>
+        <xsl:comment>EXTRACT</xsl:comment>
         <xsl:apply-templates />
-         <xsl:comment>ENDEXTRACT</xsl:comment>
+        <xsl:comment>ENDEXTRACT</xsl:comment>
     </xsl:template>
 
     <xsl:template match="Dialogue">
-         <xsl:comment>DIALOGUE</xsl:comment>
+        <xsl:comment>DIALOGUE</xsl:comment>
         <xsl:apply-templates />
-         <xsl:comment>ENDDIALOGUE</xsl:comment>
+        <xsl:comment>ENDDIALOGUE</xsl:comment>
     </xsl:template>
 
- <xsl:template match="Alternative"></xsl:template>
- <xsl:template match="Description"></xsl:template>
+    <xsl:template match="Alternative"></xsl:template>
+    <xsl:template match="Description"></xsl:template>
 
     <xsl:template match="SAQ">
-         <xsl:comment>SAQ id=<xsl:value-of select="@id" /></xsl:comment>
+        <xsl:comment>
+            SAQ id=
+            <xsl:value-of select="@id" />
+        </xsl:comment>
         <xsl:apply-templates />
-         <xsl:comment>ENDSAQ</xsl:comment>
+        <xsl:comment>ENDSAQ</xsl:comment>
     </xsl:template>
 
     <xsl:template match="SAQ/Heading">
@@ -588,42 +663,42 @@
     </xsl:template>
 
     <xsl:template match="ITQ">
-         <xsl:comment>ITQ</xsl:comment>
+        <xsl:comment>ITQ</xsl:comment>
         <xsl:apply-templates />
-         <xsl:comment>ENDITQ</xsl:comment>
+        <xsl:comment>ENDITQ</xsl:comment>
     </xsl:template>
 
 
     <xsl:template match="KeyPoints">
-         <xsl:comment>KEYPOINTS</xsl:comment>
+        <xsl:comment>KEYPOINTS</xsl:comment>
         <xsl:apply-templates />
-         <xsl:comment>ENDKEYPOINTS</xsl:comment>
+        <xsl:comment>ENDKEYPOINTS</xsl:comment>
     </xsl:template>
 
     <xsl:template match="Summary">
-         <xsl:comment>SUMMARY</xsl:comment>
+        <xsl:comment>SUMMARY</xsl:comment>
         <xsl:apply-templates />
-         <xsl:comment>ENDSUMMARY</xsl:comment>
+        <xsl:comment>ENDSUMMARY</xsl:comment>
     </xsl:template>
 
     <xsl:template match="Reading">
-         <xsl:comment>READING</xsl:comment>
+        <xsl:comment>READING</xsl:comment>
         <xsl:apply-templates />
-         <xsl:comment>ENDREADING</xsl:comment>
+        <xsl:comment>ENDREADING</xsl:comment>
     </xsl:template>
 
 
     <xsl:template match="Example">
-         <xsl:comment>EXAMPLE</xsl:comment>
+        <xsl:comment>EXAMPLE</xsl:comment>
         <xsl:apply-templates />
-         <xsl:comment>ENDEXAMPLE</xsl:comment>
+        <xsl:comment>ENDEXAMPLE</xsl:comment>
     </xsl:template>
 
 
     <xsl:template match="Verse">
-         <xsl:comment>VERSE</xsl:comment>
+        <xsl:comment>VERSE</xsl:comment>
         <xsl:apply-templates />
-         <xsl:comment>ENDVERSE</xsl:comment>
+        <xsl:comment>ENDVERSE</xsl:comment>
     </xsl:template>
 
     <xsl:template match="StudyNote">
@@ -636,12 +711,11 @@
 
     <!-- This is here as a warning / catch all for any missed heading types -->
     <xsl:template match="Heading">
-        <xsl:comment>Heading:
+        <xsl:comment>
+            Heading:
             <xsl:value-of select="." />
         </xsl:comment>
     </xsl:template>
-
-
 
 
     <!-- how do we handle this? -->
@@ -659,11 +733,15 @@
     </xsl:template>
 
     <xsl:template match="sub">
-        <sub><xsl:apply-templates /></sub>
+        <sub>
+            <xsl:apply-templates />
+        </sub>
     </xsl:template>
 
     <xsl:template match="sup">
-        <sup><xsl:apply-templates /></sup>
+        <sup>
+            <xsl:apply-templates />
+        </sup>
     </xsl:template>
 
     <xsl:template match="SideNote">
