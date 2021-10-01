@@ -58,8 +58,8 @@ def get_db_units(dbname, term):
 
 @click.command()
 @click.argument('path', default='.', type=click.Path(exists=True))
-@click.option('--xslt', '-c', default="xslt/ouxml2md.xslt",  help='XSLT path')
-@click.option('--out_path', '-c', default='md_out',  help='Out path stub')
+@click.option('--xslt', '-x', default="xslt/ouxml2md.xslt",  help='XSLT path')
+@click.option('--out_path', '-o', default='md_out',  help='Out path stub')
 def xmlfile2md(path, xslt, out_path):
 	"""Convert XML file to markdown files."""
 	click.echo('Using XML file: {}'.format(path))
