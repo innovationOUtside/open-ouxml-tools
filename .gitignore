@@ -5,3 +5,5 @@ newtest*
 
 .md
 __pycache__
+build/
+*egg-info/
