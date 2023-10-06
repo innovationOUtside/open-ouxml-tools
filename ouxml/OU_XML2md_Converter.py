@@ -177,7 +177,7 @@ class ImgExtractor(Treeprocessor):
 
 
 class ImgExtExtension(Extension):
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         img_ext = ImgExtractor(md)
         md.treeprocessors.add("imgext", img_ext, ">inline")
 
