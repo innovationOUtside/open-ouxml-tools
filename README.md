@@ -1,7 +1,7 @@
 # open-ouxml-tools
 Tools for working with (open) OU-XML docs.
 
-__THE TOOLS IN THIS REPO ARE LARGELY BROKEN AND/OR DEPRECATED. I'LL MIGRATE WORKING VERSIONS BACK IN TO THIS REPO AT SOME POINT, FOR NOW, THIS IS BEST AVOIDED. FOR NOW, SEE [`innovationOUtside/ou-xml-validator`](https://github.com/innovationOUtside/ou-xml-validator) for OU-XML2MD/MD2OU0XML TOOLS,  [`innovationOUtside/sphinxcontrib-ou-xml-tags`](https://github.com/innovationOUtside/sphinxcontrib-ou-xml-tags) FOR MYST-OU-XML-TAG_EXTENSIONS, AND [`innovationoutside/openlearnCurriculumAssets`](https://innovationoutside.github.io/openlearnCurriculumAssets/intro.html) FOR EXAMPLES OF SCRAPING OU-XML CONTENT AND DECOMPOSING OU-XML SEMANTIC BLOCKS INTO A DB INSTEAD__
+__THE TOOLS IN THIS REPO ARE LARGELY BROKEN AND/OR DEPRECATED. I'LL MIGRATE WORKING VERSIONS BACK IN TO THIS REPO AT SOME POINT, FOR NOW, THIS IS BEST AVOIDED. FOR NOW, INSTEAD SEE [`innovationOUtside/ou-xml-validator`](https://github.com/innovationOUtside/ou-xml-validator) for OU-XML2MD/MD2OU0XML TOOLS,  [`innovationOUtside/sphinxcontrib-ou-xml-tags`](https://github.com/innovationOUtside/sphinxcontrib-ou-xml-tags) FOR MYST-OU-XML-TAG_EXTENSIONS, AND [`innovationoutside/openlearnCurriculumAssets`](https://innovationoutside.github.io/openlearnCurriculumAssets/intro.html) FOR EXAMPLES OF SCRAPING OU-XML CONTENT AND DECOMPOSING OU-XML SEMANTIC BLOCKS INTO A DB__
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/innovationOUtside/open-ouxml-tools/master)
 
