@@ -1,7 +1,7 @@
 # open-ouxml-tools
 Tools for working with (open) OU-XML docs.
 
-__THE TOOLS IN THIS REPO ARE LARGELY BROKEN AND OR DEPRECATED. I'LL MIGRATE WORKING VERSTIONS BACK IN TO THIS REPO AT SOME POINT, FOR NOW, THIS IS BEST AVOIDED. FOR NOW, SEE [`innovationOUtside/ou-xml-validator`](https://github.com/innovationOUtside/ou-xml-validator) AND [`innovationOUtside/sphinxcontrib-ou-xml-tags`](https://github.com/innovationOUtside/sphinxcontrib-ou-xml-tags) INSTEAD__
+__THE TOOLS IN THIS REPO ARE LARGELY BROKEN AND/OR DEPRECATED. I'LL MIGRATE WORKING VERSIONS BACK IN TO THIS REPO AT SOME POINT, FOR NOW, THIS IS BEST AVOIDED. FOR NOW, SEE [`innovationOUtside/ou-xml-validator`](https://github.com/innovationOUtside/ou-xml-validator) AND [`innovationOUtside/sphinxcontrib-ou-xml-tags`](https://github.com/innovationOUtside/sphinxcontrib-ou-xml-tags) INSTEAD__
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/innovationOUtside/open-ouxml-tools/master)
 
