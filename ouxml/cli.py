@@ -5,6 +5,7 @@ from sqlite_utils import Database
 import shutil
 import ouxml.moodlescraper as mscpr
 import ouxml.OU_XML2md_Converter as ouxml2md
+import ouxml.md_tools as mdtools
 
 def droptable(conn, table):
     cursor = conn.cursor()
@@ -64,6 +65,12 @@ def xmlfile2md(path, xslt, out_path):
 	"""Convert XML file to markdown files."""
 	click.echo('Using XML file: {}'.format(path))
 	ouxml2md.transform_xml2md(path, xslt=xslt, output_path_stub=out_path)
+
+@click.command()
+@click.argument('path', default='.', type=click.Path(exists=True))
+def clean_md(path):
+    """Clean markdown files."""
+    mdtools.clean_md(path)
 
 @click.command()
 @click.option(

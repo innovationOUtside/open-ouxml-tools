@@ -46,6 +46,14 @@
         <xsl:text>__</xsl:text>
     </xsl:template>
 
+ <!-- Strip whitespace in the emphasis tags-->
+  <xsl:template match="b/text()">
+    <xsl:value-of select="normalize-space(.)"/>
+  </xsl:template>
+  <xsl:template match="i/text()">
+    <xsl:value-of select="normalize-space(.)"/>
+  </xsl:template>
+
     <xsl:template match="Paragraph/br">
         <xsl:text>&#xa;&#xa;</xsl:text>
     </xsl:template>
@@ -270,7 +278,7 @@ jupyter:
     <xsl:template match="Activity//Discussion">
         <xsl:text>&#xa;</xsl:text>
         <xsl:comment> #endregion </xsl:comment>
-        <xsl:text>&#xa;</xsl:text>
+        <xsl:text>&#xa;&#xa;</xsl:text>
         <xsl:comment> #region heading_collapsed=true tags=["style-activity", "precollapse"] </xsl:comment>
         <xsl:text>&#xa;#### Discussion&#xa;</xsl:text>
         <xsl:text>&#xa;Click on the triangle in the sidebar, or run this cell, to reveal my solution.&#xa;</xsl:text>
@@ -397,11 +405,13 @@ jupyter:
     -->
     <xsl:template match="Activity">
         <xsl:text>&#xa;</xsl:text>
-        <xsl:comment> #region tags=["style-activity"] </xsl:comment>
+        <xsl:comment> #region tags=["style-activity"] </xsl:comment><xsl:text>&#xa;</xsl:text>
+        <xsl:text>```{admonition} Activity</xsl:text>
         <xsl:apply-templates />
         <xsl:text>&#xa;</xsl:text>
-        <xsl:comment> #endregion </xsl:comment>
+        <xsl:text>```</xsl:text>
         <xsl:text>&#xa;</xsl:text>
+        <xsl:comment> #endregion </xsl:comment><xsl:text>&#xa;</xsl:text>
     </xsl:template>
 
     <xsl:template match="Activity/Heading">

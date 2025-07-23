@@ -17,9 +17,9 @@
     <xsl:output method="text" />
     
     <xsl:template match="/">
-                <exsl:document method="html" href="Unit_toc.md">
-        <xsl:apply-templates/>
-                            </exsl:document>
+        <exsl:document method="html" href="_toc.yml">
+            <xsl:apply-templates/>
+        </exsl:document>
     </xsl:template>
     
     <!-- OU-XML things -->
@@ -27,7 +27,10 @@
     <xsl:template match="Item">
         <!-- metadata? Or directory path? OR Readme in directory? Or contents list? -->
         <!-- <xsl:value-of select="@Module"/> - <xsl:value-of select="CourseTitle"/> -->
-            <xsl:apply-templates/>
+        <xsl:text>format: jb-book&#xa;</xsl:text>
+        <xsl:text>root: index&#xa;</xsl:text>
+        <xsl:text>parts:&#xa;</xsl:text>
+        <xsl:apply-templates/>
 
     </xsl:template>
 
@@ -37,14 +40,13 @@
         <!-- How can we count which unit we are in and use that in setting filenames? -->
         <!-- <xsl:value-of select="UnitTitle"/> -->
         <xsl:param name="filestub" select="position()"/>
+        <xsl:text>&#xa;  - caption: "</xsl:text><xsl:value-of select="./UnitTitle" /><xsl:text>"</xsl:text>
+       <xsl:text>&#xa;    chapters:</xsl:text>
         <xsl:apply-templates/>
     </xsl:template>
  
     <xsl:template match="Session">
-        <xsl:text>&#xa;.. toctree::</xsl:text>
-        <xsl:text>&#xa;  :caption: </xsl:text><xsl:value-of select="./Title" />
-        <xsl:text>&#xa;  </xsl:text><xsl:value-of select="$filestub" /><xsl:text>_</xsl:text><xsl:value-of select="format-number(count(../preceding-sibling::Unit),'00')" /><xsl:text>_</xsl:text><xsl:value-of select="format-number(count(preceding-sibling::Session)+1,'00')" /><xsl:text>.md&#xa;</xsl:text>
-        <xsl:text>&#xa;&#xa;</xsl:text>
+       <xsl:text>&#xa;    - file: </xsl:text><xsl:value-of select="$filestub" /><xsl:text>_</xsl:text><xsl:value-of select="format-number(count(../preceding-sibling::Unit),'00')" /><xsl:text>_</xsl:text><xsl:value-of select="format-number(count(preceding-sibling::Session)+1,'00')" />
     </xsl:template>
     <xsl:template match="text()"/>
 </xsl:stylesheet>

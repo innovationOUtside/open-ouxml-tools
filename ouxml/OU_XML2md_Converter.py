@@ -34,12 +34,13 @@ import glob
 # If it looks like the file is down a directory path, make sure the path is there
 # If it isn't, the XSLT won't work when it tries to write the output files...
 def check_outdir(output_path_stub):
+    if not output_path_stub:
+        return
     path = output_path_stub.split("/")
     if len(path) > 1:
         dirpath = "/".join(path[:-1])
         if not os.path.exists(dirpath):
             os.makedirs(dirpath)
-
 
 import sqlite3
 from sqlite_utils import Database
@@ -175,6 +176,10 @@ class ImgExtractor(Treeprocessor):
 
 # Then tell markdown about it
 
+# TO DO - image processing
+# When handling images, it might be better to 
+# iterate through each image and replace the path with a UID.
+# Then create a lookup from UID to path.
 
 class ImgExtExtension(Extension):
     def extendMarkdown(self, md):
