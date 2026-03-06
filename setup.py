@@ -18,7 +18,7 @@ setup(
         'sqlite_utils',
         'markdownify',
         'jupytext',
-        'markdown==3.3.7',
+        'markdown==3.8.1',
         'ruamel.yaml',
         'oyaml'
     ],
